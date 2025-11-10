@@ -252,9 +252,17 @@ class Masterbarang {
                        mb.hargajual,
                        mb.discountjual,
                        mb.stokakhir,
-                       tp.namapabrik
+                       mb.kodepabrik,
+                       tp.namapabrik,
+                       mb.kodegolongan,
+                       tg.namagolongan,
+                       mb.kandungan,
+                       mb.oot,
+                       mb.prekursor,
+                       mb.nie
                 FROM masterbarang mb
                 LEFT JOIN tabelpabrik tp ON mb.kodepabrik = tp.kodepabrik
+                LEFT JOIN tabelgolongan tg ON mb.kodegolongan = tg.kodegolongan
                 WHERE mb.status = 'aktif'
                 ORDER BY mb.namabarang ASC";
         return $this->db->fetchAll($sql);

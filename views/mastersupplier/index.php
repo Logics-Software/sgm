@@ -31,16 +31,16 @@ if (!function_exists('getSortIconMastersupplier')) {
 
         if ($currentSortBy != $column) {
             $iconPath = $baseUrl . '/assets/icons/arrows-up-down.svg';
-            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort" class="sort-icon icon-inline" width="14" height="14">';
         }
 
         if ($currentSortOrder == 'ASC') {
             $iconPath = $baseUrl . '/assets/icons/arrow-up.svg';
-            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-up" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-up" class="sort-icon icon-inline" width="14" height="14">';
         }
 
         $iconPath = $baseUrl . '/assets/icons/arrow-down.svg';
-        return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-down" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+        return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-down" class="sort-icon icon-inline" width="14" height="14">';
     }
 }
 

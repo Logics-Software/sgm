@@ -33,15 +33,15 @@ if (!function_exists('getSortIcon')) {
         
         if ($currentSortBy != $column) {
             $iconPath = $baseUrl . '/assets/icons/arrows-up-down.svg';
-            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort" class="sort-icon icon-inline" width="14" height="14">';
         }
         
         if ($currentSortOrder == 'ASC') {
             $iconPath = $baseUrl . '/assets/icons/arrow-up.svg';
-            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-up" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-up" class="sort-icon icon-inline" width="14" height="14">';
         } else {
             $iconPath = $baseUrl . '/assets/icons/arrow-down.svg';
-            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-down" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-down" class="sort-icon icon-inline" width="14" height="14">';
         }
     }
 }
@@ -136,13 +136,18 @@ require __DIR__ . '/../layouts/header.php';
                                         Status <?= getSortIcon('status', $sortBy, $sortOrder) ?>
                                     </a>
                                 </th>
+                                <th class="sortable">
+                                    <a href="<?= getSortUrl('statuspkp', $sortBy, $sortOrder, $search, $perPage, $status) ?>" class="sort-link">
+                                        PKP <?= getSortIcon('statuspkp', $sortBy, $sortOrder) ?>
+                                    </a>
+                                </th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($customers)): ?>
                             <tr>
-                                <td colspan="8" class="text-center">Tidak ada data</td>
+                                <td colspan="9" class="text-center">Tidak ada data</td>
                             </tr>
                             <?php else: ?>
                             <?php foreach ($customers as $customer): ?>
@@ -171,9 +176,15 @@ require __DIR__ . '/../layouts/header.php';
                                 <td><?= htmlspecialchars($customer['alamatcustomer'] ?? '-') ?></td>
                                 <td><?= htmlspecialchars($customer['kotacustomer'] ?? '-') ?></td>
                                 <td><?= htmlspecialchars($customer['notelepon'] ?? '-') ?></td>
-                                <td>
+                                <td align="center">
                                     <span class="badge <?= $statusBadgeClass ?>">
                                         <?= htmlspecialchars(ucfirst($statusValue)) ?>
+                                    </span>
+                                </td>
+                                <td align="center">
+                                    <?php $statusPkpValue = strtolower($customer['statuspkp'] ?? 'pkp'); ?>
+                                    <span class="badge <?= $statusPkpValue === 'pkp' ? 'bg-primary' : 'bg-secondary' ?>">
+                                        <?= $statusPkpValue === 'pkp' ? 'PKP' : 'Non PKP' ?>
                                     </span>
                                 </td>
                                 <td>

@@ -140,8 +140,8 @@ require __DIR__ . '/../layouts/header.php';
                             ?>
                         </div>
                     </div>
-                    <div class="mapbox-wrapper" style="min-height: 240px;">
-                        <div id="mapboxCheckout" style="min-height: 220px;"></div>
+                    <div class="mapbox-wrapper mapbox-height-240">
+                        <div id="mapboxCheckout" class="mapbox-canvas-220"></div>
                     </div>
                 </div>
                 <div class="card-footer bg-light text-end">

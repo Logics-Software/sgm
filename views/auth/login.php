@@ -21,9 +21,13 @@ require __DIR__ . '/../layouts/header.php';
                     <div class="invalid-feedback">Username wajib diisi.</div>
                 </div>
 
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-3 position-relative password-field">
                     <input type="password" class="form-control" id="password" name="password" required placeholder="Masukkan password">
                     <label for="password">Password</label>
+                    <button type="button" class="password-toggle" data-target="password" aria-label="Tampilkan password">
+                        <span class="password-toggle-icon-show"><?= icon('eye', '', 18) ?></span>
+                        <span class="password-toggle-icon-hide d-none"><?= icon('eye-slash', '', 18) ?></span>
+                    </button>
                     <div class="invalid-feedback">Password wajib diisi.</div>
                 </div>
 

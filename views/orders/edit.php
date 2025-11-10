@@ -7,10 +7,10 @@ if (empty($baseUrl) || $baseUrl === 'http://' || $baseUrl === 'https://') {
 }
 
 $additionalStyles = array_merge($additionalStyles ?? [], [
-    'https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css'
+    $baseUrl . '/assets/css/choices.min.css'
 ]);
 $additionalScripts = array_merge($additionalScripts ?? [], [
-    'https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js'
+    $baseUrl . '/assets/js/choices.min.js'
 ]);
 
 require __DIR__ . '/../layouts/header.php';
@@ -37,22 +37,44 @@ require __DIR__ . '/../layouts/header.php';
             <div class="card-body">
                 <form method="POST" action="" id="orderForm">
                     <div class="row g-3 mb-3">
-                        <div class="col-12">
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <label class="form-label" for="statusPkpSelect">Status PKP</label>
+                            <select name="statuspkp" id="statusPkpSelect" class="form-select">
+                                <option value="pkp" <?= (strtolower($statuspkp ?? 'pkp') === 'pkp') ? 'selected' : '' ?>>PKP</option>
+                                <option value="nonpkp" <?= (strtolower($statuspkp ?? 'pkp') === 'nonpkp') ? 'selected' : '' ?>>Non PKP</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-8">
                             <label class="form-label">Customer</label>
-                            <select name="kodecustomer" class="form-select js-choice-customer">
-                                <option value="">Pilih Customer</option>
-                                <?php foreach ($customers as $customer): ?>
-                                <?php
-                                $alamat = trim($customer['alamatcustomer'] ?? '');
-                                $optionLabel = $customer['namacustomer'];
-                                if ($alamat !== '') {
-                                    $optionLabel .= ' - ' . $alamat;
+                            <?php
+                            $normalizedStatusPkp = strtolower($statuspkp ?? 'pkp');
+                            $availableCustomers = $customersByStatus[$normalizedStatusPkp] ?? $customers;
+                            $currentCustomer = $order['kodecustomer'] ?? '';
+                            if ($currentCustomer && !array_filter($availableCustomers, static function ($item) use ($currentCustomer) {
+                                return ($item['kodecustomer'] ?? '') === $currentCustomer;
+                            })) {
+                                foreach ($customers as $fallbackCustomer) {
+                                    if (($fallbackCustomer['kodecustomer'] ?? '') === $currentCustomer) {
+                                        $availableCustomers[] = $fallbackCustomer;
+                                        break;
+                                    }
                                 }
-                                $optionLabel .= ' (' . $customer['kodecustomer'] . ')';
-                                ?>
-                                <option value="<?= htmlspecialchars($customer['kodecustomer']) ?>" <?= ($order['kodecustomer'] ?? '') === $customer['kodecustomer'] ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($optionLabel) ?>
-                                </option>
+                            }
+                            ?>
+                            <select name="kodecustomer" class="form-select js-choice-customer" data-selected="<?= htmlspecialchars($currentCustomer) ?>">
+                                <option value="">Pilih Customer</option>
+                                <?php foreach ($availableCustomers as $customer): ?>
+                                    <?php
+                                    $alamat = trim($customer['alamatcustomer'] ?? '');
+                                    $optionLabel = $customer['namacustomer'];
+                                    if ($alamat !== '') {
+                                        $optionLabel .= ' - ' . $alamat;
+                                    }
+                                    $optionLabel .= ' (' . $customer['kodecustomer'] . ')';
+                                    ?>
+                                    <option value="<?= htmlspecialchars($customer['kodecustomer']) ?>" <?= ($currentCustomer === $customer['kodecustomer']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($optionLabel) ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -102,13 +124,13 @@ require __DIR__ . '/../layouts/header.php';
                         <table class="table table-bordered align-middle order-items-table" id="detailTable">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width: 35%">Barang</th>
-                                    <th style="width: 10%" class="text-end">Jumlah</th>
-                                    <th style="width: 10%" class="text-end">Satuan</th>
-                                    <th style="width: 15%" class="text-end">Harga</th>
-                                    <th style="width: 15%" class="text-end">Diskon</th>
-                                    <th style="width: 15%" class="text-end">Total</th>
-                                    <th style="width: 10%" class="text-center">Aksi</th>
+                                    <th class="order-col-item">Barang</th>
+                                    <th class="order-col-qty text-end">Jumlah</th>
+                                    <th class="order-col-unit text-end">Satuan</th>
+                                    <th class="order-col-price text-end">Harga</th>
+                                    <th class="order-col-discount text-end">Diskon</th>
+                                    <th class="order-col-total text-end">Total</th>
+                                    <th class="order-col-action text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="detailTableBody"></tbody>
@@ -142,7 +164,7 @@ require __DIR__ . '/../layouts/header.php';
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="detailForm">
-                <div class="modal-header">
+                <div class="modal-header modal-header-muted">
                     <h5 class="modal-title" id="detailModalLabel">Tambah Barang</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -153,7 +175,7 @@ require __DIR__ . '/../layouts/header.php';
                             <option value="">Pilih Barang</option>
                             <?php foreach ($barangs as $barang): ?>
                             <option value="<?= htmlspecialchars($barang['kodebarang']) ?>" data-nama="<?= htmlspecialchars($barang['namabarang']) ?>" data-satuan="<?= htmlspecialchars($barang['satuan'] ?? '-') ?>" data-harga="<?= isset($barang['hargajual']) ? number_format((float)$barang['hargajual'], 2, '.', '') : '0' ?>" data-discount="<?= isset($barang['discountjual']) ? number_format((float)$barang['discountjual'], 2, '.', '') : '0' ?>" data-stok="<?= htmlspecialchars($barang['stokakhir'] ?? '0') ?>">
-                                <?= htmlspecialchars($barang['namabarang'] . ' (' . $barang['kodebarang'] . ')') ?>
+                                <?= htmlspecialchars(sprintf('%s (%s) - Stok: %s', $barang['namabarang'], $barang['kodebarang'], number_format((float)($barang['stokakhir'] ?? 0), 0, ',', '.'))) ?>
                             </option>
                             <?php endforeach; ?>
                         </select>
@@ -186,10 +208,10 @@ require __DIR__ . '/../layouts/header.php';
                         <input type="text" class="form-control fw-bold" id="modalTotal" value="0" readonly>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between align-items-center">
+                <div class="modal-footer modal-footer-muted justify-content-between align-items-center">
                     <div class="me-auto">
-                        <button type="button" class="btn btn-info btn-sm" id="openStockPriceModal">
-                            <?= icon('boxes-stacked', 'me-1', 14) ?> Stok &amp; Harga
+                        <button type="button" class="btn btn-info btn-lg" id="openStockPriceModal">
+                            <?= icon('boxes-stacked', 'me-2', 16) ?> Stok &amp; Harga
                         </button>
                     </div>
                     <div class="d-flex gap-2">
@@ -205,18 +227,33 @@ require __DIR__ . '/../layouts/header.php';
 <div class="modal fade" id="stockPriceModal" tabindex="-1" aria-labelledby="stockPriceModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header modal-header-muted">
                 <h5 class="modal-title" id="stockPriceModalLabel">Informasi Stok dan Harga</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row g-3 align-items-center mb-3">
-                    <div class="col-md-6">
-                        <label for="stockSearchInput" class="form-label mb-1">Cari Barang</label>
-                        <input type="text" class="form-control" id="stockSearchInput" placeholder="Ketik nama atau kode barang...">
+                <div class="row g-3 align-items-end mb-3">
+                    <div class="col-12 col-lg-4">
+                        <input type="text" class="form-control" id="stockSearchInput" placeholder="Cari Nama atau Kode Barang...">
                     </div>
-                    <div class="col-md-3 ms-md-auto">
-                        <label for="stockPageSize" class="form-label mb-1">Tampilkan</label>
+                    <div class="col-5 col-md-3 col-lg-1">
+                        <select class="form-select" id="stockStockFilter">
+                            <option value="all">Semua</option>
+                            <option value="available">Stok &gt; 0</option>
+                            <option value="empty">Stok = 0</option>
+                        </select>
+                    </div>
+                    <div class="col-7 col-md-5 col-lg-3">
+                        <select class="form-select" id="stockFactoryFilter">
+                            <option value="">Semua Pabrik</option>
+                        </select>
+                    </div>
+                    <div class="col-7 col-md-5 col-lg-3">
+                        <select class="form-select" id="stockGroupFilter">
+                            <option value="">Semua Golongan</option>
+                        </select>
+                    </div>
+                    <div class="col-5 col-md-3 col-lg-1">
                         <select class="form-select" id="stockPageSize">
                             <option value="10">10 data</option>
                             <option value="20">20 data</option>
@@ -226,15 +263,16 @@ require __DIR__ . '/../layouts/header.php';
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle">
+                    <table class="table table-striped table-hover align-middle stock-info-table">
                         <thead class="table-light">
                             <tr>
-                                <th style="width: 34%">Nama Barang</th>
-                                <th style="width: 18%">Pabrik</th>
-                                <th style="width: 12%">Satuan</th>
-                                <th style="width: 16%" class="text-end">Harga Jual</th>
-                                <th style="width: 10%" class="text-end">Diskon (%)</th>
-                                <th style="width: 10%" class="text-end">Stok</th>
+                                <th class="stock-col-name">Nama Barang</th>
+                                <th class="stock-col-factory">Pabrik</th>
+                                <th class="stock-col-group">Golongan</th>
+                                <th class="stock-col-unit">Satuan</th>
+                                <th class="stock-col-price text-end">Harga Jual</th>
+                                <th class="stock-col-discount text-end">Diskon (%)</th>
+                                <th class="stock-col-stock text-end">Stok</th>
                             </tr>
                         </thead>
                         <tbody id="stockTableBody"></tbody>
@@ -246,14 +284,18 @@ require __DIR__ . '/../layouts/header.php';
                     </nav>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer modal-footer-muted">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
             </div>
         </div>
     </div>
 </div>
 
+<?php
+$customersStatusJsonSafe = json_encode($customersByStatus ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+?>
 <script>
+const orderCustomersByStatus = <?= $customersStatusJsonSafe ?? '{}' ?> || {};
 const barangList = <?= $barangsJson ?? '[]' ?>;
 const barangMap = {};
 barangList.forEach((item) => {
@@ -462,7 +504,7 @@ function renderDetailTable(detailTableBody, detailEmptyState, grandTotalDisplay,
                 </td>
                 <td class="text-end">
                     ${discountPercent.toFixed(2).replace('.', ',')}
-                    <input type="hidden" name="detail_discount[]" value="${discountPercent.toFixed(2)}">
+                    <input type="hidden" name="detail_discount[]" value="${discountPercent.toFixed(2)}">%
                 </td>
                 <td class="text-end">
                     ${integerFormatter.format(Math.round(total))}
@@ -470,8 +512,8 @@ function renderDetailTable(detailTableBody, detailEmptyState, grandTotalDisplay,
                 </td>
                 <td class="text-center">
                     <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-primary" data-action="edit" data-index="${index}">Edit</button>
-                        <button type="button" class="btn btn-outline-danger" data-action="remove" data-index="${index}">Hapus</button>
+                        <button type="button" class="btn btn-outline-primary py-1" data-action="edit" data-index="${index}">Edit</button>
+                        <button type="button" class="btn btn-outline-danger py-1" data-action="remove" data-index="${index}">Hapus</button>
                     </div>
                 </td>
             `;
@@ -518,11 +560,106 @@ function openDetailModal(modalElements, index = null) {
     modal?.show();
 }
 
+function findChoiceInstanceForSelect(selectElement) {
+    if (!selectElement) {
+        return null;
+    }
+    return customerChoiceInstances.find(function(choice) {
+        return choice && choice.passedElement && choice.passedElement.element === selectElement;
+    }) || null;
+}
+
+function buildCustomerOptionLabel(customer) {
+    const name = (customer?.namacustomer ?? customer?.kodecustomer ?? '').toString();
+    const address = (customer?.alamatcustomer ?? '').toString().trim();
+    let label = name;
+    if (address) {
+        label += ' - ' + address;
+    }
+    if (customer?.kodecustomer) {
+        label += ' (' + customer.kodecustomer + ')';
+    }
+    return label;
+}
+
+function setupCustomerStatusFilter(customerSelect, statusSelect, customersMap) {
+    if (!customerSelect || !statusSelect) {
+        return;
+    }
+
+    let currentSelectedCustomer = customerSelect.dataset.selected || customerSelect.value || '';
+
+    function refreshCustomerOptions(preserveSelection) {
+        const normalizedStatus = (statusSelect.value || 'pkp').toLowerCase() === 'nonpkp' ? 'nonpkp' : 'pkp';
+        const list = customersMap?.[normalizedStatus] || [];
+
+        if (!preserveSelection) {
+            currentSelectedCustomer = '';
+        }
+
+        if (currentSelectedCustomer && !list.some(function(item) { return item.kodecustomer === currentSelectedCustomer; })) {
+            currentSelectedCustomer = '';
+        }
+
+        const choiceInstance = findChoiceInstanceForSelect(customerSelect);
+        if (choiceInstance) {
+            choiceInstance.clearChoices();
+            const options = [{
+                value: '',
+                label: 'Pilih Customer',
+                selected: currentSelectedCustomer === ''
+            }];
+            list.forEach(function(customer) {
+                options.push({
+                    value: customer.kodecustomer,
+                    label: buildCustomerOptionLabel(customer),
+                    selected: currentSelectedCustomer !== '' && customer.kodecustomer === currentSelectedCustomer
+                });
+            });
+            choiceInstance.setChoices(options, 'value', 'label', true);
+            if (currentSelectedCustomer) {
+                choiceInstance.setChoiceByValue(currentSelectedCustomer);
+            } else {
+                choiceInstance.removeActiveItems();
+            }
+        } else {
+            customerSelect.innerHTML = '';
+            const placeholderOption = document.createElement('option');
+            placeholderOption.value = '';
+            placeholderOption.textContent = 'Pilih Customer';
+            placeholderOption.selected = currentSelectedCustomer === '';
+            customerSelect.appendChild(placeholderOption);
+            list.forEach(function(customer) {
+                const option = document.createElement('option');
+                option.value = customer.kodecustomer;
+                option.textContent = buildCustomerOptionLabel(customer);
+                if (currentSelectedCustomer && customer.kodecustomer === currentSelectedCustomer) {
+                    option.selected = true;
+                }
+                customerSelect.appendChild(option);
+            });
+        }
+
+        customerSelect.value = currentSelectedCustomer;
+    }
+
+    refreshCustomerOptions(true);
+
+    statusSelect.addEventListener('change', function() {
+        refreshCustomerOptions(false);
+    });
+
+    customerSelect.addEventListener('change', function() {
+        currentSelectedCustomer = customerSelect.value;
+    });
+}
+
 function initOrderEditForm() {
     document.querySelectorAll('.js-choice-customer').forEach((select) => {
         if (typeof Choices !== 'undefined' && !select.dataset.choicesInitialized) {
             const choice = new Choices(select, {
                 searchEnabled: true,
+                searchResultLimit: 100,
                 searchPlaceholderValue: 'Ketik untuk mencari customer...',
                 shouldSort: false,
                 itemSelectText: '',
@@ -535,6 +672,7 @@ function initOrderEditForm() {
 
     const orderForm = document.getElementById('orderForm');
     const customerSelect = document.querySelector('select[name="kodecustomer"]');
+    const statusSelect = document.getElementById('statusPkpSelect');
     const detailModalElement = document.getElementById('detailModal');
     const modalTitle = document.getElementById('detailModalLabel');
     const detailForm = document.getElementById('detailForm');
@@ -548,16 +686,25 @@ function initOrderEditForm() {
     const openStockModalBtn = document.getElementById('openStockPriceModal');
     const stockModalElement = document.getElementById('stockPriceModal');
     const stockSearchInput = document.getElementById('stockSearchInput');
+    const stockFactoryFilter = document.getElementById('stockFactoryFilter');
+    const stockGroupFilter = document.getElementById('stockGroupFilter');
+    const stockStockFilter = document.getElementById('stockStockFilter');
     const stockTableBody = document.getElementById('stockTableBody');
     const stockPagination = document.getElementById('stockPagination');
     const stockPageSizeSelect = document.getElementById('stockPageSize');
     let stockPriceModalInstance = null;
     const stockTableState = {
+        allItems: Array.isArray(barangList) ? [...barangList] : [],
         filtered: [],
         currentPage: 1,
         pageSize: parseInt(stockPageSizeSelect?.value ?? '10', 10),
-        totalPages: 1
+        totalPages: 1,
+        filterFactory: '',
+        filterGroup: '',
+        filterStock: 'all',
+        searchQuery: ''
     };
+    stockTableState.filtered = [...stockTableState.allItems];
     const addDetailBtn = document.getElementById('addDetailBtn');
     const detailTableBody = document.getElementById('detailTableBody');
     const detailEmptyState = document.getElementById('detailEmptyState');
@@ -571,12 +718,15 @@ function initOrderEditForm() {
     if (typeof Choices !== 'undefined' && modalBarangSelect) {
         barangChoiceInstance = new Choices(modalBarangSelect, {
             searchEnabled: true,
+            searchResultLimit: 100,
             searchPlaceholderValue: 'Cari barang...',
             shouldSort: false,
             itemSelectText: '',
             noResultsText: 'Barang tidak ditemukan'
         });
     }
+
+    setupCustomerStatusFilter(customerSelect, statusSelect, orderCustomersByStatus);
 
     const modalElements = {
         modal: detailModalInstance,
@@ -589,6 +739,159 @@ function initOrderEditForm() {
         modalTotalInput,
         modalSatuanDisplay
     };
+
+    function normalizeFilterKey(value) {
+        const trimmed = (value ?? '').toString().trim();
+        return trimmed === '' ? '__EMPTY__' : trimmed;
+    }
+
+    function populateStockFilters() {
+        if (stockFactoryFilter) {
+            const previousValue = stockTableState.filterFactory;
+            const optionsMap = new Map();
+            stockTableState.allItems.forEach((item) => {
+                const key = normalizeFilterKey(item.kodepabrik);
+                if (!optionsMap.has(key)) {
+                    let label = (item.namapabrik ?? '').toString().trim();
+                    const rawCode = (item.kodepabrik ?? '').toString().trim();
+                    if (!label) {
+                        label = rawCode || 'Tanpa Pabrik';
+                    }
+                    optionsMap.set(key, label);
+                }
+            });
+            const sortedOptions = [...optionsMap.entries()]
+                .filter(([key]) => key !== '__EMPTY__')
+                .sort((a, b) => a[1].localeCompare(b[1], 'id', { sensitivity: 'base' }));
+            const hasEmptyOption = optionsMap.has('__EMPTY__');
+
+            stockFactoryFilter.innerHTML = '<option value="">Semua Pabrik</option>';
+            if (hasEmptyOption) {
+                const option = document.createElement('option');
+                option.value = '__EMPTY__';
+                option.textContent = 'Tanpa Pabrik';
+                stockFactoryFilter.appendChild(option);
+            }
+            sortedOptions.forEach(([value, label]) => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = label;
+                stockFactoryFilter.appendChild(option);
+            });
+            stockFactoryFilter.value = previousValue;
+            if (stockFactoryFilter.value !== previousValue) {
+                stockFactoryFilter.value = '';
+                stockTableState.filterFactory = '';
+            }
+        }
+
+        if (stockGroupFilter) {
+            const previousValue = stockTableState.filterGroup;
+            const optionsMap = new Map();
+            stockTableState.allItems.forEach((item) => {
+                const key = normalizeFilterKey(item.kodegolongan);
+                if (!optionsMap.has(key)) {
+                    let label = (item.namagolongan ?? '').toString().trim();
+                    const rawCode = (item.kodegolongan ?? '').toString().trim();
+                    if (!label) {
+                        label = rawCode || 'Tanpa Golongan';
+                    }
+                    optionsMap.set(key, label);
+                }
+            });
+            const sortedOptions = [...optionsMap.entries()]
+                .filter(([key]) => key !== '__EMPTY__')
+                .sort((a, b) => a[1].localeCompare(b[1], 'id', { sensitivity: 'base' }));
+            const hasEmptyOption = optionsMap.has('__EMPTY__');
+
+            stockGroupFilter.innerHTML = '<option value="">Semua Golongan</option>';
+            if (hasEmptyOption) {
+                const option = document.createElement('option');
+                option.value = '__EMPTY__';
+                option.textContent = 'Tanpa Golongan';
+                stockGroupFilter.appendChild(option);
+            }
+            sortedOptions.forEach(([value, label]) => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = label;
+                stockGroupFilter.appendChild(option);
+            });
+            stockGroupFilter.value = previousValue;
+            if (stockGroupFilter.value !== previousValue) {
+                stockGroupFilter.value = '';
+                stockTableState.filterGroup = '';
+            }
+        }
+
+        if (stockStockFilter) {
+            stockStockFilter.value = stockTableState.filterStock || 'all';
+        }
+    }
+
+    function applyStockFilters() {
+        const query = (stockTableState.searchQuery || '').trim().toLowerCase();
+        const factoryFilter = stockTableState.filterFactory;
+        const groupFilter = stockTableState.filterGroup;
+        const stockFilter = stockTableState.filterStock || 'all';
+
+        stockTableState.filtered = stockTableState.allItems.filter((item) => {
+            const kode = (item.kodebarang ?? '').toString().toLowerCase();
+            const nama = (item.namabarang ?? '').toString().toLowerCase();
+            const satuan = (item.satuan ?? '').toString().toLowerCase();
+            const pabrikName = (item.namapabrik ?? '').toString().toLowerCase();
+            const pabrikCode = (item.kodepabrik ?? '').toString().toLowerCase();
+            const golonganName = (item.namagolongan ?? '').toString().toLowerCase();
+            const golonganCode = (item.kodegolongan ?? '').toString().toLowerCase();
+
+            const matchesQuery =
+                !query ||
+                kode.includes(query) ||
+                nama.includes(query) ||
+                satuan.includes(query) ||
+                pabrikName.includes(query) ||
+                pabrikCode.includes(query) ||
+                golonganName.includes(query) ||
+                golonganCode.includes(query);
+
+            if (!matchesQuery) {
+                return false;
+            }
+
+            if (factoryFilter && normalizeFilterKey(item.kodepabrik) !== factoryFilter) {
+                return false;
+            }
+
+            if (groupFilter && normalizeFilterKey(item.kodegolongan) !== groupFilter) {
+                return false;
+            }
+
+            if (stockFilter !== 'all') {
+                let stokValue = item.stokakhir;
+                if (typeof stokValue === 'string') {
+                    stokValue = stokValue.trim();
+                }
+                let stokNumber = null;
+                if (stokValue !== null && stokValue !== undefined && stokValue !== '') {
+                    stokNumber = parseFloat(String(stokValue).replace(',', '.'));
+                    if (!Number.isFinite(stokNumber)) {
+                        stokNumber = null;
+                    }
+                }
+                if (stockFilter === 'available') {
+                    if (!(stokNumber !== null && stokNumber > 0)) {
+                        return false;
+                    }
+                } else if (stockFilter === 'empty') {
+                    if (!(stokNumber !== null && stokNumber === 0)) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        });
+    }
 
     function renderStockTable() {
         if (!stockTableBody) {
@@ -608,20 +911,23 @@ function initOrderEditForm() {
         const startIndex = (stockTableState.currentPage - 1) * stockTableState.pageSize;
         const pageItems = stockTableState.filtered.slice(startIndex, startIndex + stockTableState.pageSize);
         stockTableBody.innerHTML = pageItems
-            .map((item) => {
+            .map((item, idx) => {
+                const globalIndex = startIndex + idx;
                 const nama = escapeHtml(item.namabarang ?? '');
                 const pabrik = escapeHtml(item.namapabrik ?? '');
+                const golongan = escapeHtml(item.namagolongan ?? '');
                 const satuan = escapeHtml(item.satuan ?? '-');
                 const harga = parseFloat(item.hargajual ?? 0);
                 const diskon = parseFloat(item.discountjual ?? 0);
                 const stok = item.stokakhir !== undefined && item.stokakhir !== null ? parseFloat(item.stokakhir) : null;
                 return `
-                    <tr>
+                    <tr class="stock-info-row" data-index="${globalIndex}" role="button">
                         <td><span class="fw-semibold">${nama}</span></td>
-                        <td>${pabrik}</td>
+                        <td>${pabrik || '-'}</td>
+                        <td>${golongan || '-'}</td>
                         <td>${satuan}</td>
                         <td class="text-end">${integerFormatter.format(Math.round(harga))}</td>
-                        <td class="text-end">${Number.isFinite(diskon) ? diskon.toFixed(2).replace('.', ',') : '0,00'}</td>
+                        <td class="text-end">${Number.isFinite(diskon) ? diskon.toFixed(2).replace('.', ',') : '0,00'} %</td>
                         <td class="text-end">${stok !== null && Number.isFinite(stok) ? formatQty(stok) : '-'}</td>
                     </tr>
                 `;
@@ -632,7 +938,7 @@ function initOrderEditForm() {
             if (totalPages <= 1) {
                 stockPagination.innerHTML = '';
             } else {
-                const maxLinks = 5;
+                const maxLinks = 3;
                 const half = Math.floor(maxLinks / 2);
                 let start = Math.max(1, stockTableState.currentPage - half);
                 let end = Math.min(totalPages, start + maxLinks - 1);
@@ -669,6 +975,49 @@ function initOrderEditForm() {
         }
     }
 
+    function buildStockDetailMessage(item) {
+        if (!item) {
+            return '<div class="text-start"><em>Data barang tidak ditemukan.</em></div>';
+        }
+
+        const hargaValue = parseFloat(item.hargajual ?? 0);
+        const discountValue = parseFloat(item.discountjual ?? 0);
+        const stokValue =
+            item.stokakhir !== undefined && item.stokakhir !== null
+                ? formatQty(item.stokakhir)
+                : '-';
+
+        const detailPairs = [
+            ['Kode Barang', item.kodebarang ?? '-'],
+            ['Nama Barang', item.namabarang ?? '-'],
+            ['Satuan', item.satuan ?? '-'],
+            ['Pabrik', item.namapabrik ?? '-'],
+            ['Golongan', item.namagolongan ?? '-'],
+            ['Kandungan', item.kandungan ?? '-'],
+            ['OOT', item.oot ?? '-'],
+            ['Prekursor', item.prekursor ?? '-'],
+            ['NIE', item.nie ?? '-'],
+            ['Harga Jual', Number.isFinite(hargaValue) ? `Rp ${integerFormatter.format(Math.round(hargaValue))}` : '-'],
+            [
+                'Discount',
+                Number.isFinite(discountValue)
+                    ? `${discountValue.toFixed(2).replace('.', ',')} %`
+                    : '-'
+            ],
+            ['Stok Akhir', stokValue]
+        ];
+
+        const detailHtml = detailPairs
+            .map(([label, value]) => {
+                const safeLabel = escapeHtml(label);
+                const safeValue = escapeHtml(value === null || value === undefined || value === '' ? '-' : String(value));
+                return `<div class="mb-1"><strong>${safeLabel}</strong>: ${safeValue}</div>`;
+            })
+            .join('');
+
+        return `<div class="text-start">${detailHtml}</div>`;
+    }
+
     function openStockPriceModal() {
         if (!stockModalElement || typeof bootstrap === 'undefined') {
             return;
@@ -676,12 +1025,16 @@ function initOrderEditForm() {
         if (!stockPriceModalInstance) {
             stockPriceModalInstance = new bootstrap.Modal(stockModalElement);
         }
-        stockTableState.pageSize = parseInt(stockPageSizeSelect?.value ?? '10', 10);
-        stockTableState.currentPage = 1;
-        stockTableState.filtered = Array.isArray(barangList) ? [...barangList] : [];
-        if (stockSearchInput) {
-            stockSearchInput.value = '';
+        stockTableState.allItems = Array.isArray(barangList) ? [...barangList] : [];
+        if (stockPageSizeSelect) {
+            stockPageSizeSelect.value = String(stockTableState.pageSize);
         }
+        if (stockSearchInput) {
+            stockSearchInput.value = stockTableState.searchQuery;
+        }
+        populateStockFilters();
+        applyStockFilters();
+        stockTableState.currentPage = 1;
         renderStockTable();
         stockPriceModalInstance.show();
     }
@@ -691,28 +1044,56 @@ function initOrderEditForm() {
         openStockPriceModal();
     });
 
+    stockTableBody?.addEventListener('click', (event) => {
+        const row = event.target.closest('tr[data-index]');
+        if (!row) {
+            return;
+        }
+        const index = parseInt(row.dataset.index, 10);
+        if (Number.isNaN(index) || index < 0 || index >= stockTableState.filtered.length) {
+            return;
+        }
+        const item = stockTableState.filtered[index];
+        showAlert({
+            title: 'Informasi Barang',
+            message: buildStockDetailMessage(item),
+            buttonText: 'Tutup',
+            buttonClass: 'btn-primary'
+        });
+    });
+
     stockSearchInput?.addEventListener('input', () => {
-        const query = stockSearchInput.value.trim().toLowerCase();
-        stockTableState.filtered = Array.isArray(barangList)
-            ? barangList.filter((item) => {
-                  const kode = (item.kodebarang ?? '').toLowerCase();
-                  const nama = (item.namabarang ?? '').toLowerCase();
-                  const satuan = (item.satuan ?? '').toLowerCase();
-                  const pabrik = (item.namapabrik ?? '').toLowerCase();
-                  return (
-                      kode.includes(query) ||
-                      nama.includes(query) ||
-                      satuan.includes(query) ||
-                      pabrik.includes(query)
-                  );
-              })
-            : [];
+        stockTableState.searchQuery = stockSearchInput.value || '';
         stockTableState.currentPage = 1;
+        applyStockFilters();
+        renderStockTable();
+    });
+
+    stockFactoryFilter?.addEventListener('change', () => {
+        stockTableState.filterFactory = stockFactoryFilter.value;
+        stockTableState.currentPage = 1;
+        applyStockFilters();
+        renderStockTable();
+    });
+
+    stockGroupFilter?.addEventListener('change', () => {
+        stockTableState.filterGroup = stockGroupFilter.value;
+        stockTableState.currentPage = 1;
+        applyStockFilters();
+        renderStockTable();
+    });
+
+    stockStockFilter?.addEventListener('change', () => {
+        const value = stockStockFilter.value || 'all';
+        stockTableState.filterStock = value;
+        stockTableState.currentPage = 1;
+        applyStockFilters();
         renderStockTable();
     });
 
     stockPageSizeSelect?.addEventListener('change', () => {
-        stockTableState.pageSize = parseInt(stockPageSizeSelect.value ?? '10', 10);
+        const parsed = parseInt(stockPageSizeSelect.value ?? '10', 10);
+        stockTableState.pageSize = Number.isFinite(parsed) && parsed > 0 ? parsed : 10;
         stockTableState.currentPage = 1;
         renderStockTable();
     });

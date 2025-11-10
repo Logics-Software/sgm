@@ -7,7 +7,7 @@ class Headerorder {
     }
 
     public function findByNoorder($noorder) {
-        $sql = "SELECT ho.*, mc.namacustomer, u.namalengkap AS namasales
+        $sql = "SELECT ho.*, mc.namacustomer, mc.alamatcustomer, mc.kotacustomer, u.namalengkap AS namasales
                 FROM headerorder ho
                 LEFT JOIN mastercustomer mc ON ho.kodecustomer = mc.kodecustomer
                 LEFT JOIN users u ON ho.kodesales = u.kodesales
@@ -57,7 +57,7 @@ class Headerorder {
 
         $whereClause = implode(' AND ', $where);
 
-        $sql = "SELECT ho.*, mc.namacustomer
+        $sql = "SELECT ho.*, mc.namacustomer, mc.alamatcustomer, mc.kotacustomer
                 FROM headerorder ho
                 LEFT JOIN mastercustomer mc ON ho.kodecustomer = mc.kodecustomer
                 WHERE {$whereClause}
@@ -117,12 +117,13 @@ class Headerorder {
         try {
             $conn->beginTransaction();
 
-            $sqlHeader = "INSERT INTO headerorder (noorder, tanggalorder, kodesales, kodecustomer, keterangan, nilaiorder, nopenjualan, status)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $sqlHeader = "INSERT INTO headerorder (noorder, tanggalorder, kodesales, statuspkp, kodecustomer, keterangan, nilaiorder, nopenjualan, status)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $this->db->query($sqlHeader, [
                 $headerData['noorder'],
                 $headerData['tanggalorder'],
                 $headerData['kodesales'],
+                $headerData['statuspkp'],
                 $headerData['kodecustomer'],
                 $headerData['keterangan'],
                 $headerData['nilaiorder'],
@@ -158,11 +159,12 @@ class Headerorder {
             $conn->beginTransaction();
 
             $sqlHeader = "UPDATE headerorder
-                          SET tanggalorder = ?, kodesales = ?, kodecustomer = ?, keterangan = ?, nilaiorder = ?, nopenjualan = ?, status = ?
+                          SET tanggalorder = ?, kodesales = ?, statuspkp = ?, kodecustomer = ?, keterangan = ?, nilaiorder = ?, nopenjualan = ?, status = ?
                           WHERE noorder = ?";
             $this->db->query($sqlHeader, [
                 $headerData['tanggalorder'],
                 $headerData['kodesales'],
+                $headerData['statuspkp'],
                 $headerData['kodecustomer'],
                 $headerData['keterangan'],
                 $headerData['nilaiorder'],

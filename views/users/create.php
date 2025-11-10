@@ -43,7 +43,13 @@ require __DIR__ . '/../layouts/header.php';
                         
                         <div class="col-md-6 mb-3">
                             <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                            <input type="password" class="form-control" id="password" name="password" required placeholder="Minimal 6 karakter">
+                            <div class="position-relative password-field">
+                                <input type="password" class="form-control" id="password" name="password" required placeholder="Minimal 6 karakter">
+                                <button type="button" class="password-toggle" data-target="password" aria-label="Tampilkan password">
+                                    <span class="password-toggle-icon-show"><?= icon('eye', '', 18) ?></span>
+                                    <span class="password-toggle-icon-hide d-none"><?= icon('eye-slash', '', 18) ?></span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     

@@ -183,6 +183,47 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+function initPasswordToggles() {
+  const toggles = document.querySelectorAll(".password-toggle");
+  toggles.forEach(function (btn) {
+    const targetId = btn.getAttribute("data-target");
+    if (!targetId) {
+      return;
+    }
+    const input = document.getElementById(targetId);
+    if (!input) {
+      return;
+    }
+
+    btn.addEventListener("click", function () {
+      const showIcon = btn.querySelector(".password-toggle-icon-show");
+      const hideIcon = btn.querySelector(".password-toggle-icon-hide");
+
+      if (input.type === "password") {
+        input.type = "text";
+        btn.setAttribute("aria-label", "Sembunyikan password");
+        if (showIcon) {
+          showIcon.classList.add("d-none");
+        }
+        if (hideIcon) {
+          hideIcon.classList.remove("d-none");
+        }
+      } else {
+        input.type = "password";
+        btn.setAttribute("aria-label", "Tampilkan password");
+        if (showIcon) {
+          showIcon.classList.remove("d-none");
+        }
+        if (hideIcon) {
+          hideIcon.classList.add("d-none");
+        }
+      }
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initPasswordToggles);
+
 // Enhance mobile navigation interactions
 document.addEventListener("DOMContentLoaded", function () {
   const navbarCollapseEl = document.getElementById("navbarNav");

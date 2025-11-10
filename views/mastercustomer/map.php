@@ -89,11 +89,11 @@ require __DIR__ . '/../layouts/header.php';
                     <div class="d-flex flex-wrap gap-2 align-items-center">
                         <div class="d-flex align-items-center gap-1">
                             <span class="text-muted small">Lat</span>
-                            <input type="text" id="selectedLatitude" class="form-control form-control-sm" style="width: 140px;" readonly>
+                            <input type="text" id="selectedLatitude" class="form-control form-control-sm coordinate-input" readonly>
                         </div>
                         <div class="d-flex align-items-center gap-1">
                             <span class="text-muted small">Lng</span>
-                            <input type="text" id="selectedLongitude" class="form-control form-control-sm" style="width: 140px;" readonly>
+                            <input type="text" id="selectedLongitude" class="form-control form-control-sm coordinate-input" readonly>
                         </div>
                     </div>
                     <button type="button" class="btn btn-outline-primary btn-sm d-flex align-items-center" id="btnCopyCoordinate">
@@ -116,7 +116,7 @@ require __DIR__ . '/../layouts/header.php';
                     </div>
                 <?php else: ?>
                     <div id="mapGeocoder" class="mapbox-geocoder-container mb-3"></div>
-                    <div id="mapCanvas" style="width: 100%; height: 520px; border-radius: 0.75rem; overflow: hidden;"></div>
+                    <div id="mapCanvas" class="map-canvas-large"></div>
                     <div class="small text-muted mt-2" id="mapStatus">Klik peta atau seret marker untuk menentukan koordinat.</div>
                 <?php endif; ?>
             </div>

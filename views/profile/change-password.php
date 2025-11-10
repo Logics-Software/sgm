@@ -30,17 +30,35 @@ require __DIR__ . '/../layouts/header.php';
                 <form method="POST" action="/profile/change-password">
                     <div class="mb-3">
                         <label for="current_password" class="form-label">Password Lama <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="current_password" name="current_password" required placeholder="Masukkan password lama">
+                        <div class="position-relative password-field">
+                            <input type="password" class="form-control" id="current_password" name="current_password" required placeholder="Masukkan password lama">
+                            <button type="button" class="password-toggle" data-target="current_password" aria-label="Tampilkan password lama">
+                                <span class="password-toggle-icon-show"><?= icon('eye', '', 18) ?></span>
+                                <span class="password-toggle-icon-hide d-none"><?= icon('eye-slash', '', 18) ?></span>
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="mb-3">
                         <label for="new_password" class="form-label">Password Baru <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="new_password" name="new_password" required minlength="6" placeholder="Minimal 6 karakter">
+                        <div class="position-relative password-field">
+                            <input type="password" class="form-control" id="new_password" name="new_password" required minlength="6" placeholder="Minimal 6 karakter">
+                            <button type="button" class="password-toggle" data-target="new_password" aria-label="Tampilkan password baru">
+                                <span class="password-toggle-icon-show"><?= icon('eye', '', 18) ?></span>
+                                <span class="password-toggle-icon-hide d-none"><?= icon('eye-slash', '', 18) ?></span>
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="mb-3">
                         <label for="confirm_password" class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="6" placeholder="Ulangi password baru">
+                        <div class="position-relative password-field">
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="6" placeholder="Ulangi password baru">
+                            <button type="button" class="password-toggle" data-target="confirm_password" aria-label="Tampilkan konfirmasi password">
+                                <span class="password-toggle-icon-show"><?= icon('eye', '', 18) ?></span>
+                                <span class="password-toggle-icon-hide d-none"><?= icon('eye-slash', '', 18) ?></span>
+                            </button>
+                        </div>
                     </div>
                     
                     <hr class="my-4">

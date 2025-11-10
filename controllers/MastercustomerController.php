@@ -51,6 +51,7 @@ class MastercustomerController extends Controller {
                 'npwp' => $_POST['npwp'] ?? null,
                 'namawp' => $_POST['namawp'] ?? null,
                 'alamatwp' => $_POST['alamatwp'] ?? null,
+                'statuspkp' => $_POST['statuspkp'] ?? 'nonpkp',
                 'namaapoteker' => $_POST['namaapoteker'] ?? null,
                 'nosipa' => $_POST['nosipa'] ?? null,
                 'tanggaledsipa' => $_POST['tanggaledsipa'] ?? null,

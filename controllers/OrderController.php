@@ -75,6 +75,10 @@ class OrderController extends Controller {
         }
 
         $customers = $this->customerModel->getAllForSelection();
+        $customersByStatus = [
+            'pkp' => array_values(array_filter($customers, static fn($c) => strtolower($c['statuspkp'] ?? 'pkp') === 'pkp')),
+            'nonpkp' => array_values(array_filter($customers, static fn($c) => strtolower($c['statuspkp'] ?? 'pkp') === 'nonpkp')),
+        ];
         $barangs = $this->barangModel->getAllForSelection();
         $noorder = $this->generateNoorder();
 
@@ -91,13 +95,16 @@ class OrderController extends Controller {
         $data = [
             'noorder' => $noorder,
             'customers' => $customers,
+            'customersByStatus' => $customersByStatus,
             'barangs' => $barangs,
             'selectedCustomer' => $_POST['kodecustomer'] ?? '',
+            'statuspkp' => $_POST['statuspkp'] ?? 'pkp',
             'tanggalorder' => date('Y-m-d'),
             'keterangan' => $_POST['keterangan'] ?? '',
             'status' => 'order',
             'detailItems' => $this->getPostedDetails(),
-            'barangsJson' => json_encode($barangs)
+            'barangsJson' => json_encode($barangs),
+            'customersByStatusJson' => json_encode($customersByStatus)
         ];
 
         $this->view('orders/create', $data);
@@ -124,6 +131,10 @@ class OrderController extends Controller {
         }
 
         $customers = $this->customerModel->getAllForSelection();
+        $customersByStatus = [
+            'pkp' => array_values(array_filter($customers, static fn($c) => strtolower($c['statuspkp'] ?? 'pkp') === 'pkp')),
+            'nonpkp' => array_values(array_filter($customers, static fn($c) => strtolower($c['statuspkp'] ?? 'pkp') === 'nonpkp')),
+        ];
         $barangs = $this->barangModel->getAllForSelection();
         $detailItems = $this->detailModel->getByNoorder($noorder);
 
@@ -148,8 +159,11 @@ class OrderController extends Controller {
             'order' => $order,
             'detailItems' => $detailItems,
             'customers' => $customers,
+            'customersByStatus' => $customersByStatus,
             'barangs' => $barangs,
-            'barangsJson' => json_encode($barangs)
+            'statuspkp' => $_POST['statuspkp'] ?? ($order['statuspkp'] ?? 'pkp'),
+            'barangsJson' => json_encode($barangs),
+            'customersByStatusJson' => json_encode($customersByStatus)
         ];
 
         $this->view('orders/edit', $data);
@@ -240,9 +254,21 @@ class OrderController extends Controller {
         $keterangan = trim($_POST['keterangan'] ?? '');
         $status = 'order';
         $nopenjualan = $_POST['nopenjualan'] ?? null;
+        $statusPkpInput = $_POST['statuspkp'] ?? ($existingOrder['statuspkp'] ?? 'pkp');
+        $statusPkpNormalized = strtolower(trim($statusPkpInput)) === 'nonpkp' ? 'nonpkp' : 'pkp';
 
         if (empty($kodecustomer)) {
             return ['success' => false, 'message' => 'Customer harus dipilih'];
+        }
+
+        $customerInfo = $this->customerModel->findByKodecustomer($kodecustomer);
+        if (!$customerInfo) {
+            return ['success' => false, 'message' => 'Customer tidak ditemukan'];
+        }
+
+        $customerStatusPkp = strtolower($customerInfo['statuspkp'] ?? 'pkp');
+        if ($customerStatusPkp !== $statusPkpNormalized) {
+            return ['success' => false, 'message' => 'Customer yang dipilih tidak sesuai dengan status PKP order'];
         }
 
         $detailData = $this->sanitizeDetailInput();
@@ -256,6 +282,7 @@ class OrderController extends Controller {
             'noorder' => $noorder,
             'tanggalorder' => $tanggalorder,
             'kodesales' => $user['kodesales'] ?? $existingOrder['kodesales'] ?? null,
+            'statuspkp' => $statusPkpNormalized,
             'kodecustomer' => $kodecustomer,
             'keterangan' => $keterangan,
             'nilaiorder' => $nilaiOrder,

@@ -89,17 +89,17 @@ require __DIR__ . '/../layouts/header.php';
                         <div class="card-header bg-success text-white d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
                             <h5 class="mb-0">Customer</h5>
                             <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto justify-content-md-end">
-                                <input type="search" class="form-control form-control-sm flex-grow-1" id="customerSearchInput" placeholder="Cari nama atau kode customer" style="min-width: 260px; max-width: 420px;">
+                                <input type="search" class="form-control form-control-sm flex-grow-1 search-input-wide" id="customerSearchInput" placeholder="Cari nama atau kode customer">
                                 <button type="button" class="btn btn-light btn-sm" id="btnRefreshNearby">Segarkan</button>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="mapbox-wrapper" style="min-height: 280px;">
-                                <div id="mapboxCheckin" style="min-height: 260px;"></div>
+                            <div class="mapbox-wrapper mapbox-height-280">
+                                <div id="mapboxCheckin" class="mapbox-canvas-260"></div>
                             </div>
                             <div class="mt-3">
                                 <h6 class="fw-semibold">Daftar Customer</h6>
-                                <div class="list-group" id="customerResults" style="max-height: 260px; overflow-y: auto;">
+                                <div class="list-group scrollable-list-260" id="customerResults">
                                     <div class="list-group-item text-muted small">Mulai dengan mengambil lokasi Anda...</div>
                                 </div>
                             </div>
@@ -135,7 +135,7 @@ require __DIR__ . '/../layouts/header.php';
             <div class="modal-body">
                 <p class="mb-2 small text-muted" id="coordinateCustomerName"></p>
                 <div id="coordinateGeocoder" class="mapbox-geocoder-container mb-3"></div>
-                <div id="coordinatePickerMap" style="height: 320px; border-radius: 0.5rem;"></div>
+                <div id="coordinatePickerMap" class="coordinate-picker-map"></div>
                 <div class="small text-muted mt-2" id="coordinateFeedback"></div>
             </div>
             <div class="modal-footer">
@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         updateStatus('Mengambil data customer...', 'info');
-        const params = new URLSearchParams({ limit: 15 });
+        const params = new URLSearchParams({ limit: 50 });
         if (currentCoords) {
             params.append('lat', currentCoords.lat);
             params.append('lng', currentCoords.lng);

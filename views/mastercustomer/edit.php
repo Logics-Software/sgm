@@ -24,6 +24,12 @@ $formattedLongitude = isset($customer['longitude']) && $customer['longitude'] !=
     ? number_format((float)$customer['longitude'], 6, '.', '')
     : '';
 
+$currentStatusPkp = strtolower($customer['statuspkp'] ?? 'pkp');
+$isPkp = $currentStatusPkp === 'pkp';
+$npwpValue = $isPkp ? ($customer['npwp'] ?? '') : '';
+$namawpValue = $isPkp ? ($customer['namawp'] ?? '') : '';
+$alamatwpValue = $isPkp ? ($customer['alamatwp'] ?? '') : '';
+
 require __DIR__ . '/../layouts/header.php';
 ?>
 
@@ -57,38 +63,49 @@ require __DIR__ . '/../layouts/header.php';
                             <label for="alamatcustomer" class="form-label">Alamat Customer</label>
                             <input type="text" class="form-control" id="alamatcustomer" value="<?= htmlspecialchars($customer['alamatcustomer']. ' ' .$customer['kotacustomer'] ?? '') ?>" readonly>
                         </div>
-                        <div class="col-md-5 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="notelepon" class="form-label">No Telepon</label>
                             <input type="text" class="form-control" id="notelepon" value="<?= htmlspecialchars($customer['notelepon'] ?? '') ?>" readonly>
                         </div>
-                        <div class="col-md-7 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="kontakperson" class="form-label">Kontak Person</label>
                             <input type="text" class="form-control" id="kontakperson" value="<?= htmlspecialchars($customer['kontakperson'] ?? '') ?>" readonly>
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="statuspkp" class="form-label">Status PKP</label>
+                            <select class="form-select" id="statuspkp" name="statuspkp" disabled>
+                                <option value="pkp" <?= $currentStatusPkp === 'pkp' ? 'selected' : '' ?>>PKP</option>
+                                <option value="nonpkp" <?= $currentStatusPkp === 'nonpkp' ? 'selected' : '' ?>>Non PKP</option>
+                            </select>
+                            <input type="hidden" name="statuspkp" value="<?= htmlspecialchars($currentStatusPkp) ?>">
+                        </div>
                     </div>
 
-                    <hr class="my-4">
+                    <hr class="my-2">
 
                     <!-- Kelompok 2: Wajib Pajak (Editable) -->
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="card border-primary">
-                                <div class="card-header bg-primary text-white">
+                                <div class="card-header bg-head-green2 text-white">
                                     <h5 class="mb-0">Data Wajib Pajak</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-2 mb-3">
                                             <label for="npwp" class="form-label">NPWP</label>
-                                            <input type="text" class="form-control" id="npwp" name="npwp" value="<?= htmlspecialchars($customer['npwp'] ?? '') ?>" placeholder="Masukkan NPWP">
+                                            <input type="text" class="form-control" id="npwp_display" value="<?= htmlspecialchars($npwpValue) ?>" placeholder="Masukkan NPWP" data-pkp-hidden="npwp_hidden" <?= $isPkp ? '' : 'disabled' ?>>
+                                            <input type="hidden" name="npwp" id="npwp_hidden" value="<?= htmlspecialchars($npwpValue) ?>">
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="namawp" class="form-label">Nama WP</label>
-                                            <input type="text" class="form-control" id="namawp" name="namawp" value="<?= htmlspecialchars($customer['namawp'] ?? '') ?>" placeholder="Masukkan Nama Wajib Pajak">
+                                            <input type="text" class="form-control" id="namawp_display" value="<?= htmlspecialchars($namawpValue) ?>" placeholder="Masukkan Nama Wajib Pajak" data-pkp-hidden="namawp_hidden" <?= $isPkp ? '' : 'disabled' ?>>
+                                            <input type="hidden" name="namawp" id="namawp_hidden" value="<?= htmlspecialchars($namawpValue) ?>">
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="alamatwp" class="form-label">Alamat WP</label>
-                                            <input type="text" class="form-control" id="alamatwp" name="alamatwp" value="<?= htmlspecialchars($customer['alamatwp'] ?? '') ?>" placeholder="Masukkan Alamat Wajib Pajak">
+                                            <input type="text" class="form-control" id="alamatwp_display" value="<?= htmlspecialchars($alamatwpValue) ?>" placeholder="Masukkan Alamat Wajib Pajak" data-pkp-hidden="alamatwp_hidden" <?= $isPkp ? '' : 'disabled' ?>>
+                                            <input type="hidden" name="alamatwp" id="alamatwp_hidden" value="<?= htmlspecialchars($alamatwpValue) ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -96,13 +113,13 @@ require __DIR__ . '/../layouts/header.php';
                         </div>
                     </div>
 
-                    <hr class="my-4">
+                    <hr class="my-2">
 
                     <!-- Kelompok 3: Ijin SIPA dan CDOB (Editable) -->
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="card border-info">
-                                <div class="card-header bg-info text-white">
+                                <div class="card-header bg-head-green3 text-white">
                                     <h5 class="mb-0">Data Ijin SIPA dan CDOB</h5>
                                 </div>
                                 <div class="card-body">
@@ -141,13 +158,13 @@ require __DIR__ . '/../layouts/header.php';
                         </div>
                     </div>
                     
-                    <hr class="my-4">
+                    <hr class="my-2">
 
                     <!-- Kelompok 4: Lokasi Customer -->
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="card border-success">
-                                <div class="card-header bg-success text-white">
+                                <div class="card-header bg-head-green3 text-white">
                                     <h5 class="mb-0">Lokasi Customer</h5>
                                 </div>
                                 <div class="card-body">
@@ -205,6 +222,29 @@ require __DIR__ . '/../layouts/header.php';
 <?php
 $mapboxTokenJs = json_encode($mapboxToken, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 $additionalInlineScripts = $additionalInlineScripts ?? [];
+$additionalInlineScripts[] = <<<JS
+document.addEventListener('DOMContentLoaded', function() {
+    var statusSelect = document.getElementById('statuspkp');
+    var isPkp = statusSelect && statusSelect.value === 'pkp';
+    document.querySelectorAll('[data-pkp-hidden]').forEach(function(input) {
+        var hiddenId = input.getAttribute('data-pkp-hidden');
+        var hidden = hiddenId ? document.getElementById(hiddenId) : null;
+        if (!hidden) {
+            return;
+        }
+        if (isPkp) {
+            input.removeAttribute('disabled');
+            input.addEventListener('input', function() {
+                hidden.value = input.value;
+            });
+        } else {
+            input.value = '';
+            input.setAttribute('disabled', 'disabled');
+            hidden.value = '';
+        }
+    });
+});
+JS;
 $additionalInlineScripts[] = <<<JS
 (function() {
     const mapContainer = document.getElementById('customerLocationMap');

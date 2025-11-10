@@ -32,15 +32,15 @@ if (!function_exists('getSortIcon')) {
         
         if ($currentSortBy != $column) {
             $iconPath = $baseUrl . '/assets/icons/arrows-up-down.svg';
-            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort" class="sort-icon icon-inline" width="14" height="14">';
         }
         
         if ($currentSortOrder == 'ASC') {
             $iconPath = $baseUrl . '/assets/icons/arrow-up.svg';
-            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-up" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-up" class="sort-icon icon-inline" width="14" height="14">';
         } else {
             $iconPath = $baseUrl . '/assets/icons/arrow-down.svg';
-            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-down" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-down" class="sort-icon icon-inline" width="14" height="14">';
         }
     }
 }
@@ -151,9 +151,9 @@ require __DIR__ . '/../layouts/header.php';
                                 <td align="center"><?= $user['id'] ?></td>
                                 <td>
                                     <?php if ($user['picture'] && file_exists(__DIR__ . '/../../uploads/' . $user['picture'])): ?>
-                                    <img src="<?= htmlspecialchars($baseUrl) ?>/uploads/<?= htmlspecialchars($user['picture']) ?>" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #dee2e6;">
+                                    <img src="<?= htmlspecialchars($baseUrl) ?>/uploads/<?= htmlspecialchars($user['picture']) ?>" alt="Profile" class="rounded-circle avatar-img avatar-img-md avatar-border-muted">
                                     <?php else: ?>
-                                    <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border: 2px solid #dee2e6;">
+                                    <div class="bg-secondary avatar-placeholder avatar-placeholder-md">
                                         <span class="text-white fw-bold"><?= strtoupper(substr($user['namalengkap'], 0, 1)) ?></span>
                                     </div>
                                     <?php endif; ?>

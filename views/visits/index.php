@@ -118,7 +118,7 @@ require __DIR__ . '/../layouts/header.php';
                         </td>
                         <td>
                             <div class="fw-semibold"><?= htmlspecialchars($visit['namacustomer'] ?? '-') ?></div>
-                            <div class="small text-muted">Kode: <?= htmlspecialchars($visit['kodecustomer']) ?></div>
+                            <!-- <div class="small text-muted">Kode: <?= htmlspecialchars($visit['kodecustomer']) ?></div> -->
                             <div class="small text-muted">Kota: <?= htmlspecialchars($visit['kotacustomer'] ?? '-') ?></div>
                         </td>
                         <td>
@@ -144,7 +144,7 @@ require __DIR__ . '/../layouts/header.php';
                             <div class="small text-muted mt-1">Jarak: <?= number_format($visit['jarak_dari_kantor'], 2) ?> km</div>
                             <?php endif; ?>
                         </td>
-                        <td style="max-width: 220px; white-space: normal;">
+                        <td class="table-text-wrap-220">
                             <small><?= nl2br(htmlspecialchars($visit['catatan'] ?? '-')) ?></small>
                         </td>
                         <td>

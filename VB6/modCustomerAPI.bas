@@ -42,6 +42,7 @@ Public Function CreateMastercustomer(kodeCustomer As String, namaCustomer As Str
                                      Optional kotacustomer As String = "", _
                                      Optional notelepon As String = "", _
                                      Optional kontakperson As String = "", _
+                                     Optional statuspkp As String = "nonpkp", _
                                      Optional npwp As String = "", _
                                      Optional namawp As String = "", _
                                      Optional alamatwp As String = "", _
@@ -68,6 +69,7 @@ Public Function CreateMastercustomer(kodeCustomer As String, namaCustomer As Str
     If kotacustomer <> "" Then postData = postData & "&kotacustomer=" & URLEncode(kotacustomer)
     If notelepon <> "" Then postData = postData & "&notelepon=" & URLEncode(notelepon)
     If kontakperson <> "" Then postData = postData & "&kontakperson=" & URLEncode(kontakperson)
+    postData = postData & "&statuspkp=" & URLEncode(statuspkp)
     If npwp <> "" Then postData = postData & "&npwp=" & URLEncode(npwp)
     If namawp <> "" Then postData = postData & "&namawp=" & URLEncode(namawp)
     If alamatwp <> "" Then postData = postData & "&alamatwp=" & URLEncode(alamatwp)
@@ -94,6 +96,7 @@ Public Function UpdateMastercustomer(id As Long, _
                                      Optional kotacustomer As String = "", _
                                      Optional notelepon As String = "", _
                                      Optional kontakperson As String = "", _
+                                     Optional statuspkp As String = "", _
                                      Optional npwp As String = "", _
                                      Optional namawp As String = "", _
                                      Optional alamatwp As String = "", _
@@ -123,6 +126,7 @@ Public Function UpdateMastercustomer(id As Long, _
     If kotacustomer <> "" Then postData = postData & "&kotacustomer=" & URLEncode(kotacustomer): hasData = True
     If notelepon <> "" Then postData = postData & "&notelepon=" & URLEncode(notelepon): hasData = True
     If kontakperson <> "" Then postData = postData & "&kontakperson=" & URLEncode(kontakperson): hasData = True
+    If statuspkp <> "" Then postData = postData & "&statuspkp=" & URLEncode(statuspkp): hasData = True
     If npwp <> "" Then postData = postData & "&npwp=" & URLEncode(npwp): hasData = True
     If namawp <> "" Then postData = postData & "&namawp=" & URLEncode(namawp): hasData = True
     If alamatwp <> "" Then postData = postData & "&alamatwp=" & URLEncode(alamatwp): hasData = True

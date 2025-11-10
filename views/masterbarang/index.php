@@ -36,16 +36,16 @@ if (!function_exists('getSortIconMasterbarang')) {
 
         if ($currentSortBy != $column) {
             $iconPath = $baseUrl . '/assets/icons/arrows-up-down.svg';
-            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort" class="sort-icon icon-inline" width="14" height="14">';
         }
 
         if ($currentSortOrder == 'ASC') {
             $iconPath = $baseUrl . '/assets/icons/arrow-up.svg';
-            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-up" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+            return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-up" class="sort-icon icon-inline" width="14" height="14">';
         }
 
         $iconPath = $baseUrl . '/assets/icons/arrow-down.svg';
-        return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-down" class="sort-icon" width="14" height="14" style="display: inline-block; vertical-align: middle;">';
+        return '<img src="' . htmlspecialchars($iconPath) . '" alt="sort-down" class="sort-icon icon-inline" width="14" height="14">';
     }
 }
 
@@ -75,37 +75,37 @@ require __DIR__ . '/../layouts/header.php';
                 <div class="row search-filter-card">
                     <form method="GET" action="/masterbarang" id="searchForm">
                         <div class="row g-2 align-items-end">
-                            <div class="col-12 col-md-3">
+                            <div class="col-12 col-md-2">
                                 <input type="text" class="form-control" name="search" placeholder="Cari nama barang atau kandungan..." value="<?= htmlspecialchars($search) ?>">
                             </div>
-                            <div class="col-6 col-md-2">
+                            <div class="col-5 col-md-3 col-lg-1">
                                 <select name="status" class="form-select" onchange="this.form.submit()">
-                                    <option value="" <?= $filterStatus === '' ? 'selected' : '' ?>>Semua Status</option>
+                                    <option value="" <?= $filterStatus === '' ? 'selected' : '' ?>>Semua</option>
                                     <option value="aktif" <?= $filterStatus === 'aktif' ? 'selected' : '' ?>>Aktif</option>
                                     <option value="nonaktif" <?= $filterStatus === 'nonaktif' ? 'selected' : '' ?>>Non Aktif</option>
                                 </select>
                             </div>
-                            <div class="col-6 col-md-2">
+                            <div class="col-7 col-md-5 col-lg-3">
                                 <select name="kodepabrik" class="form-select" onchange="this.form.submit()">
                                     <option value="">Semua Pabrik</option>
                                     <?php foreach ($pabriks as $pabrik): ?>
                                     <option value="<?= htmlspecialchars($pabrik['kodepabrik']) ?>" <?= $filterPabrik === $pabrik['kodepabrik'] ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($pabrik['kodepabrik'] . ' - ' . $pabrik['namapabrik']) ?>
+                                        <?= htmlspecialchars($pabrik['namapabrik']) ?>
                                     </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="col-6 col-md-2">
+                            <div class="col-7 col-md-5 col-lg-3">
                                 <select name="kodegolongan" class="form-select" onchange="this.form.submit()">
                                     <option value="">Semua Golongan</option>
                                     <?php foreach ($golongans as $golongan): ?>
                                     <option value="<?= htmlspecialchars($golongan['kodegolongan']) ?>" <?= $filterGolongan === $golongan['kodegolongan'] ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($golongan['kodegolongan'] . ' - ' . $golongan['namagolongan']) ?>
+                                        <?= htmlspecialchars($golongan['namagolongan']) ?>
                                     </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="col-6 col-md-1">
+                            <div class="col-5 col-md-3 col-lg-1">
                                 <select name="per_page" class="form-select" onchange="this.form.submit()">
                                     <?php foreach ([10, 20, 40, 60, 100] as $pp): ?>
                                     <option value="<?= $pp ?>" <?= $perPage == $pp ? 'selected' : '' ?>><?= $pp ?></option>
@@ -181,7 +181,7 @@ require __DIR__ . '/../layouts/header.php';
                                     </span>
                                 </td>
                                 <td align="center">
-                                    <a href="/masterbarang/view/<?= $item['id'] ?>" class="btn btn-sm btn-info text-white"><?= icon('eye', 'me-0 mb-1', 14) ?></a>
+                                    <a href="/masterbarang/view/<?= $item['id'] ?>" class="btn btn-sm btn-info text-white"><?= icon('show', 'me-0 mb-1', 14) ?></a>
                                     <!-- <?php if ($currentUser && in_array($currentUser['role'], ['admin', 'manajemen', 'operator'])): ?>
                                     <a href="/masterbarang/edit/<?= $item['id'] ?>" class="btn btn-sm btn-warning"><?= icon('update', 'me-0 mb-1', 14) ?></a>
                                     <?php endif; ?> -->

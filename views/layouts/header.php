@@ -15,8 +15,9 @@ if (!function_exists('icon')) {
             $baseUrl = '/';
         }
         $iconPath = $baseUrl . '/assets/icons/' . $name . '.svg';
-        $classAttr = !empty($class) ? ' class="' . htmlspecialchars($class) . '"' : '';
-        return '<img src="' . htmlspecialchars($iconPath) . '" alt="' . htmlspecialchars($name) . '" width="' . $size . '" height="' . $size . '"' . $classAttr . ' style="display: inline-block; vertical-align: middle;">';
+        $classes = trim('icon-inline ' . $class);
+        $classAttr = ' class="' . htmlspecialchars($classes) . '"';
+        return '<img src="' . htmlspecialchars($iconPath) . '" alt="' . htmlspecialchars($name) . '" width="' . $size . '" height="' . $size . '"' . $classAttr . '>';
     }
 }
 ?>
@@ -132,10 +133,10 @@ if (!function_exists('icon')) {
                             }
                             ?>
                             <?php if ($picturePath): ?>
-                            <img src="<?= $picturePath ?>" alt="Profile" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover; border: 2px solid rgba(255,255,255,0.3);">
+                            <img src="<?= $picturePath ?>" alt="Profile" class="rounded-circle me-2 avatar-img avatar-img-sm avatar-border-light">
                             <?php else: ?>
-                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; border: 2px solid rgba(255,255,255,0.3);">
-                                <span class="text-primary fw-bold" style="font-size: 0.875rem;">
+                            <div class="bg-light avatar-placeholder avatar-placeholder-sm avatar-placeholder-light me-2">
+                                <span class="text-primary fw-bold avatar-initial-sm">
                                     <?= strtoupper(substr($currentUser['namalengkap'], 0, 1)) ?>
                                 </span>
                             </div>
@@ -145,10 +146,10 @@ if (!function_exists('icon')) {
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li class="px-3 py-2 text-center border-bottom">
                                 <?php if ($picturePath): ?>
-                                <img src="<?= $picturePath ?>" alt="Profile" class="rounded-circle mb-2" style="width: 64px; height: 64px; object-fit: cover; border: 2px solid #dee2e6;">
+                                <img src="<?= $picturePath ?>" alt="Profile" class="rounded-circle mb-2 avatar-img avatar-img-lg avatar-border-muted">
                                 <?php else: ?>
-                                <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 64px; height: 64px; border: 2px solid #dee2e6;">
-                                    <span class="text-white fw-bold" style="font-size: 1.5rem;">
+                                <div class="bg-secondary avatar-placeholder avatar-placeholder-lg mb-2">
+                                    <span class="text-white fw-bold avatar-initial-lg">
                                         <?= strtoupper(substr($currentUser['namalengkap'], 0, 1)) ?>
                                     </span>
                                 </div>
@@ -157,7 +158,7 @@ if (!function_exists('icon')) {
                                 <small class="profile-dropdown-email"><?= htmlspecialchars($currentUser['email']) ?></small>
                             </li>
                             <li><a class="dropdown-item" href="/profile"><?= icon('profile', 'me-2', 16) ?> Edit Profile</a></li>
-                            <li><a class="dropdown-item" href="/profile/change-password"><?= icon('password', 'me-2', 16) ?> Ubah Password</a></li>
+                            <li><a class="dropdown-item" href="/profile/change-password"><?= icon('key', 'me-2', 16) ?> Ubah Password</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/logout"><?= icon('logout', 'me-2', 16) ?> Logout</a></li>
                         </ul>
@@ -173,8 +174,8 @@ if (!function_exists('icon')) {
         $successMessage = Session::flash('success');
         if ($successMessage): 
         ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert" style="color: #0a3622; background-color: #d1e7dd;">
-            <span style="color: #0a3622; font-weight: 500;">
+        <div class="alert alert-success alert-dismissible fade show alert-feedback-success" role="alert">
+            <span class="alert-feedback-text-success">
                 <?= htmlspecialchars($successMessage) ?>
             </span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -185,8 +186,8 @@ if (!function_exists('icon')) {
         $errorMessage = Session::flash('error');
         if ($errorMessage): 
         ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="color: #3d0f14; background-color: #f8d7da;">
-            <span style="color: #3d0f14; font-weight: 500;">
+        <div class="alert alert-danger alert-dismissible fade show alert-feedback-danger" role="alert">
+            <span class="alert-feedback-text-danger">
                 <?= htmlspecialchars($errorMessage) ?>
             </span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>

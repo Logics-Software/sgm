@@ -44,6 +44,7 @@ class Mastercustomer {
             'alamatcustomer',
             'kotacustomer',
             'notelepon',
+            'statuspkp',
             'status',
             'created_at',
             'updated_at'
@@ -168,6 +169,7 @@ class Mastercustomer {
             kotacustomer,
             notelepon,
             kontakperson,
+            statuspkp,
             npwp,
             namawp,
             alamatwp,
@@ -192,6 +194,7 @@ class Mastercustomer {
             $data['kotacustomer'] ?? null,
             $data['notelepon'] ?? null,
             $data['kontakperson'] ?? null,
+            $this->normalizeStatusPkp($data['statuspkp'] ?? 'nonpkp'),
             $data['npwp'] ?? null,
             $data['namawp'] ?? null,
             $data['alamatwp'] ?? null,
@@ -224,6 +227,7 @@ class Mastercustomer {
             'kotacustomer',
             'notelepon',
             'kontakperson',
+            'statuspkp',
             'npwp',
             'namawp',
             'alamatwp',
@@ -242,9 +246,13 @@ class Mastercustomer {
 
         foreach ($allowedFields as $field) {
             if (array_key_exists($field, $data)) {
-                $value = $field === 'status'
-                    ? $this->normalizeStatusValue($data[$field], 'updated')
-                    : $data[$field];
+                if ($field === 'status') {
+                    $value = $this->normalizeStatusValue($data[$field], 'updated');
+                } elseif ($field === 'statuspkp') {
+                    $value = $this->normalizeStatusPkp($data[$field], null);
+                } else {
+                    $value = $data[$field];
+                }
                 $fields[] = "{$field} = ?";
                 $params[] = $value;
             }
@@ -280,7 +288,9 @@ class Mastercustomer {
     }
 
     public function getAllForSelection() {
-        $sql = "SELECT kodecustomer, namacustomer, alamatcustomer FROM mastercustomer ORDER BY namacustomer ASC";
+        $sql = "SELECT kodecustomer, namacustomer, alamatcustomer, statuspkp
+                FROM mastercustomer
+                ORDER BY namacustomer ASC";
         return $this->db->fetchAll($sql);
     }
 
@@ -298,6 +308,21 @@ class Mastercustomer {
 
         if (in_array($value, $allowed, true)) {
             return $value;
+        }
+
+        return $default;
+    }
+
+    private function normalizeStatusPkp($value, $default = 'nonpkp') {
+        if ($value === null || $value === '') {
+            return $default;
+        }
+
+        $normalized = strtolower(trim((string)$value));
+        $allowed = ['pkp', 'nonpkp'];
+
+        if (in_array($normalized, $allowed, true)) {
+            return $normalized;
         }
 
         return $default;

@@ -91,6 +91,7 @@ require __DIR__ . '/../layouts/header.php';
                                 <th>Customer</th>
                                 <th>Nilai Order</th>
                                 <th align="center">Status</th>
+                                <th>No.Faktur</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -111,8 +112,9 @@ require __DIR__ . '/../layouts/header.php';
                                         <?= ucfirst($order['status']) ?>
                                     </span>
                                 </td>
+                                <td><?= htmlspecialchars($order['nopenjualan'] ?? '-') ?></td>
                                 <td align="center">
-                                    <a href="/orders/view/<?= urlencode($order['noorder']) ?>" class="btn btn-sm btn-info text-white"><?= icon('eye', 'me-0 mb-1', 14) ?></a>
+                                    <a href="/orders/view/<?= urlencode($order['noorder']) ?>" class="btn btn-sm btn-info text-white"><?= icon('show', 'me-0 mb-1', 14) ?></a>
                                     <?php if ($order['status'] === 'order' && (($currentUser['role'] ?? '') !== 'sales' || ($currentUser['kodesales'] ?? '') === $order['kodesales'])): ?>
                                     <a href="/orders/edit/<?= urlencode($order['noorder']) ?>" class="btn btn-sm btn-warning"><?= icon('update', 'me-0 mb-1', 14) ?></a>
                                     <button type="button" class="btn btn-sm btn-danger" onclick="confirmDeleteOrder('<?= htmlspecialchars($order['noorder']) ?>')"><?= icon('delete', 'me-0 mb-1', 14) ?></button>

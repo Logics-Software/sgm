@@ -70,13 +70,13 @@ require __DIR__ . '/../layouts/header.php';
                     
                     <div class="mb-3">
                         <label class="form-label">Role</label>
-                        <input type="text" class="form-control" value="<?= ucfirst($user['role']) ?>" disabled style="background-color: #e9ecef;">
+                        <input type="text" class="form-control form-control-static" value="<?= ucfirst($user['role']) ?>" disabled>
                     </div>
                     
                     <?php if ($user['kodesales']): ?>
                     <div class="mb-3">
                         <label class="form-label">Kode Sales</label>
-                        <input type="text" class="form-control" value="<?= htmlspecialchars($user['kodesales']) ?>" disabled style="background-color: #e9ecef;">
+                        <input type="text" class="form-control form-control-static" value="<?= htmlspecialchars($user['kodesales']) ?>" disabled>
                     </div>
                     <?php endif; ?>
                     

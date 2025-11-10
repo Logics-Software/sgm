@@ -130,22 +130,22 @@ Begin VB.Form frmMastercustomer
    Begin VB.TextBox txtCustomerAlamatWP 
       Height          =   315
       Left            =   5280
-      TabIndex        =   12
-      Top             =   2400
+      TabIndex        =   13
+      Top             =   2760
       Width           =   2415
    End
    Begin VB.TextBox txtCustomerNamaWP 
       Height          =   315
       Left            =   5280
-      TabIndex        =   11
-      Top             =   2040
+      TabIndex        =   12
+      Top             =   2400
       Width           =   2415
    End
    Begin VB.TextBox txtCustomerNPWP 
       Height          =   315
       Left            =   5280
-      TabIndex        =   10
-      Top             =   1680
+      TabIndex        =   11
+      Top             =   2040
       Width           =   2415
    End
    Begin VB.TextBox txtCustomerKontakPerson 
@@ -153,6 +153,15 @@ Begin VB.Form frmMastercustomer
       Left            =   5280
       TabIndex        =   9
       Top             =   1320
+      Width           =   2415
+   End
+   Begin VB.ComboBox cmbCustomerStatusPKP 
+      Enabled         =   0   'False
+      Height          =   315
+      Left            =   5280
+      Style           =   2  'Dropdown List
+      TabIndex        =   10
+      Top             =   1680
       Width           =   2415
    End
    Begin VB.TextBox txtCustomerNoTelepon 
@@ -304,7 +313,7 @@ Begin VB.Form frmMastercustomer
       Height          =   255
       Left            =   3720
       TabIndex        =   37
-      Top             =   2400
+      Top             =   2760
       Width           =   1455
    End
    Begin VB.Label lblCustomerNamaWP 
@@ -312,7 +321,7 @@ Begin VB.Form frmMastercustomer
       Height          =   255
       Left            =   3720
       TabIndex        =   36
-      Top             =   2040
+      Top             =   2400
       Width           =   1455
    End
    Begin VB.Label lblCustomerNPWP 
@@ -320,6 +329,14 @@ Begin VB.Form frmMastercustomer
       Height          =   255
       Left            =   3720
       TabIndex        =   35
+      Top             =   2040
+      Width           =   1455
+   End
+   Begin VB.Label lblCustomerStatusPKP 
+      Caption         =   "Status PKP:"
+      Height          =   255
+      Left            =   3720
+      TabIndex        =   34
       Top             =   1680
       Width           =   1455
    End
@@ -327,7 +344,7 @@ Begin VB.Form frmMastercustomer
       Caption         =   "Kontak Person:"
       Height          =   255
       Left            =   3720
-      TabIndex        =   34
+      TabIndex        =   33
       Top             =   1320
       Width           =   1455
    End
@@ -418,7 +435,34 @@ Private Sub Form_Load()
     cmbCustomerStatus.AddItem "nonaktif"
     cmbCustomerStatus.ListIndex = 0
  
+    cmbCustomerStatusPKP.Clear
+    cmbCustomerStatusPKP.AddItem "pkp"
+    cmbCustomerStatusPKP.AddItem "nonpkp"
+    cmbCustomerStatusPKP.ListIndex = 0
+    ApplyStatusPkpState "pkp"
+ 
     Call cmdCustomerLoad_Click
+End Sub
+
+Private Sub ApplyStatusPkpState(ByVal statusValue As String, Optional ByVal preserveValues As Boolean = False)
+    Dim isPkp As Boolean
+    isPkp = (LCase$(Trim$(statusValue)) = "pkp")
+
+    If isPkp Then
+        txtCustomerNPWP.Enabled = True
+        txtCustomerNamaWP.Enabled = True
+        txtCustomerAlamatWP.Enabled = True
+    Else
+        txtCustomerNPWP.Enabled = False
+        txtCustomerNamaWP.Enabled = False
+        txtCustomerAlamatWP.Enabled = False
+
+        If Not preserveValues Then
+            txtCustomerNPWP.Text = ""
+            txtCustomerNamaWP.Text = ""
+            txtCustomerAlamatWP.Text = ""
+        End If
+    End If
 End Sub
 
 Private Sub cmdCustomerLoad_Click()
@@ -430,6 +474,7 @@ Private Sub cmdCustomerLoad_Click()
     Dim item As String
     Dim kode As String
     Dim nama As String
+    Dim statusPkp As String
 
     On Error GoTo ErrorHandler
 
@@ -493,6 +538,13 @@ Private Sub cmdCustomerSave_Click()
 
     lblCustomerInfo.Caption = "Saving data..."
 
+    statusPkp = LCase$(Trim$(cmbCustomerStatusPKP.Text))
+    If statusPkp <> "pkp" Then
+        txtCustomerNPWP.Text = ""
+        txtCustomerNamaWP.Text = ""
+        txtCustomerAlamatWP.Text = ""
+    End If
+
     response = CreateMastercustomer( _
         kode, _
         nama, _
@@ -501,6 +553,7 @@ Private Sub cmdCustomerSave_Click()
         Trim(txtCustomerKota.text), _
         Trim(txtCustomerNoTelepon.text), _
         Trim(txtCustomerKontakPerson.text), _
+        statusPkp, _
         Trim(txtCustomerNPWP.text), _
         Trim(txtCustomerNamaWP.text), _
         Trim(txtCustomerAlamatWP.text), _
@@ -542,6 +595,7 @@ End Sub
 Private Sub cmdCustomerUpdate_Click()
     Dim response As String
     Dim id As Long
+    Dim statusPkp As String
 
     On Error GoTo ErrorHandler
 
@@ -554,6 +608,13 @@ Private Sub cmdCustomerUpdate_Click()
 
     lblCustomerInfo.Caption = "Updating data..."
 
+    statusPkp = LCase$(Trim$(cmbCustomerStatusPKP.Text))
+    If statusPkp <> "pkp" Then
+        txtCustomerNPWP.Text = ""
+        txtCustomerNamaWP.Text = ""
+        txtCustomerAlamatWP.Text = ""
+    End If
+
     response = UpdateMastercustomer( _
         id, _
         Trim(txtCustomerKode.text), _
@@ -563,6 +624,7 @@ Private Sub cmdCustomerUpdate_Click()
         Trim(txtCustomerKota.text), _
         Trim(txtCustomerNoTelepon.text), _
         Trim(txtCustomerKontakPerson.text), _
+        statusPkp, _
         Trim(txtCustomerNPWP.text), _
         Trim(txtCustomerNamaWP.text), _
         Trim(txtCustomerAlamatWP.text), _
@@ -678,9 +740,6 @@ Private Sub lstCustomerData_Click()
         txtCustomerKota.text = ParseJSONValue(data, "kotacustomer")
         txtCustomerNoTelepon.text = ParseJSONValue(data, "notelepon")
         txtCustomerKontakPerson.text = ParseJSONValue(data, "kontakperson")
-        txtCustomerNPWP.text = ParseJSONValue(data, "npwp")
-        txtCustomerNamaWP.text = ParseJSONValue(data, "namawp")
-        txtCustomerAlamatWP.text = ParseJSONValue(data, "alamatwp")
         txtCustomerNamaApoteker.text = ParseJSONValue(data, "namaapoteker")
         txtCustomerNoSIPA.text = ParseJSONValue(data, "nosipa")
         txtCustomerTanggalEdSIPA.text = ParseJSONValue(data, "tanggaledsipa")
@@ -708,6 +767,19 @@ Private Sub lstCustomerData_Click()
         End Select
 
         lblCustomerInfo.Caption = "Data loaded: " & kode
+
+        Dim statusPkpValue As String
+        statusPkpValue = LCase$(ParseJSONValue(data, "statuspkp"))
+        If statusPkpValue = "pkp" Then
+            cmbCustomerStatusPKP.ListIndex = 0
+            ApplyStatusPkpState statusPkpValue, True
+            txtCustomerNPWP.Text = ParseJSONValue(data, "npwp")
+            txtCustomerNamaWP.Text = ParseJSONValue(data, "namawp")
+            txtCustomerAlamatWP.Text = ParseJSONValue(data, "alamatwp")
+        Else
+            cmbCustomerStatusPKP.ListIndex = 1
+            ApplyStatusPkpState statusPkpValue
+        End If
     Else
         lblCustomerInfo.Caption = "Error: " & GetAPIErrorMessage(response)
     End If
@@ -741,6 +813,8 @@ Private Sub ClearCustomerForm()
     txtCustomerLongitude.text = ""
     txtCustomerUserID.text = ""
     cmbCustomerStatus.ListIndex = 0
+    cmbCustomerStatusPKP.ListIndex = 0
+    ApplyStatusPkpState "pkp"
 End Sub
 
 Private Sub cmdSetKoordinat_Click()

@@ -184,7 +184,7 @@ require __DIR__ . '/../layouts/header.php';
                                     <?php endif; ?>
                                 </td>
                                 <td><?= htmlspecialchars($log['ip_address'] ?? '-') ?></td>
-                                <td style="max-width: 260px; white-space: normal; word-break: break-word;">
+                                <td class="table-text-wrap-260">
                                     <small><?= htmlspecialchars($log['user_agent'] ?? '-') ?></small>
                                 </td>
                             </tr>

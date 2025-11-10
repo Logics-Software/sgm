@@ -109,6 +109,7 @@ class ApiMastercustomerController extends Controller {
             'kotacustomer' => $input['kotacustomer'] ?? null,
             'notelepon' => $input['notelepon'] ?? null,
             'kontakperson' => $input['kontakperson'] ?? null,
+            'statuspkp' => $input['statuspkp'] ?? 'nonpkp',
             'npwp' => $input['npwp'] ?? null,
             'namawp' => $input['namawp'] ?? null,
             'alamatwp' => $input['alamatwp'] ?? null,
