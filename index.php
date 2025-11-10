@@ -1,0 +1,152 @@
+<?php
+// Set timezone
+date_default_timezone_set('Asia/Jakarta');
+
+// Error reporting (disable in production)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Autoload classes
+spl_autoload_register(function ($class) {
+    $paths = [
+        __DIR__ . '/core/' . $class . '.php',
+        __DIR__ . '/models/' . $class . '.php',
+        __DIR__ . '/controllers/' . $class . '.php',
+        __DIR__ . '/controllers/api/' . $class . '.php'
+    ];
+    
+    foreach ($paths as $path) {
+        if (file_exists($path)) {
+            require $path;
+            return;
+        }
+    }
+});
+
+// Start session
+Session::start();
+
+// Initialize router
+$router = new Router();
+
+// Root route - handled in Router dispatch
+
+// Auth routes
+$router->get('/login', 'AuthController', 'login');
+$router->post('/login', 'AuthController', 'login');
+$router->get('/logout', 'AuthController', 'logout');
+
+// Dashboard routes
+$router->get('/', 'DashboardController', 'index');
+$router->get('/dashboard', 'DashboardController', 'index');
+
+// User management routes (admin/manajemen only)
+$router->get('/users', 'UserController', 'index');
+$router->get('/users/create', 'UserController', 'create');
+$router->post('/users/create', 'UserController', 'create');
+$router->get('/users/edit/{id}', 'UserController', 'edit');
+$router->post('/users/edit/{id}', 'UserController', 'edit');
+$router->get('/users/delete/{id}', 'UserController', 'delete');
+
+// Profile routes
+$router->get('/profile', 'ProfileController', 'index');
+$router->post('/profile', 'ProfileController', 'update');
+$router->get('/profile/change-password', 'ProfileController', 'changePassword');
+$router->post('/profile/change-password', 'ProfileController', 'changePassword');
+
+// Master Customer routes
+$router->get('/mastercustomer', 'MastercustomerController', 'index');
+$router->get('/mastercustomer/map', 'MastercustomerController', 'map');
+$router->get('/mastercustomer/edit/{id}', 'MastercustomerController', 'edit');
+$router->post('/mastercustomer/edit/{id}', 'MastercustomerController', 'edit');
+
+// Tabel Pabrik routes
+$router->get('/tabelpabrik', 'TabelpabrikController', 'index');
+
+// Tabel Golongan routes
+$router->get('/tabelgolongan', 'TabelgolonganController', 'index');
+
+// Master Supplier routes
+$router->get('/mastersupplier', 'MastersupplierController', 'index');
+
+// Master Barang routes
+$router->get('/masterbarang', 'MasterbarangController', 'index');
+$router->get('/masterbarang/view/{id}', 'MasterbarangController', 'show');
+$router->get('/masterbarang/edit/{id}', 'MasterbarangController', 'edit');
+$router->post('/masterbarang/edit/{id}', 'MasterbarangController', 'edit');
+
+// Order transaction routes
+$router->get('/orders', 'OrderController', 'index');
+$router->get('/orders/create', 'OrderController', 'create');
+$router->post('/orders/create', 'OrderController', 'create');
+$router->get('/orders/view/{noorder}', 'OrderController', 'show');
+$router->get('/orders/edit/{noorder}', 'OrderController', 'edit');
+$router->post('/orders/edit/{noorder}', 'OrderController', 'edit');
+$router->get('/orders/delete/{noorder}', 'OrderController', 'delete');
+
+// Login Log routes (admin/manajemen only)
+$router->get('/login-logs', 'LoginLogController', 'index');
+
+// Tabel Aktivitas routes (admin/manajemen/operator)
+$router->get('/tabelaktivitas', 'TabelaktivitasController', 'index');
+$router->get('/tabelaktivitas/create', 'TabelaktivitasController', 'create');
+$router->post('/tabelaktivitas/create', 'TabelaktivitasController', 'create');
+$router->get('/tabelaktivitas/edit/{id}', 'TabelaktivitasController', 'edit');
+$router->post('/tabelaktivitas/edit/{id}', 'TabelaktivitasController', 'edit');
+$router->get('/tabelaktivitas/delete/{id}', 'TabelaktivitasController', 'delete');
+
+// Visit routes (sales only)
+$router->get('/visits', 'VisitController', 'index');
+$router->get('/visits/check-in', 'VisitController', 'checkin');
+$router->post('/visits/check-in', 'VisitController', 'checkin');
+$router->get('/visits/checkout/{id}', 'VisitController', 'checkout');
+$router->post('/visits/checkout/{id}', 'VisitController', 'checkout');
+$router->post('/visits/{id}/activities', 'VisitController', 'createActivity');
+$router->get('/visits/nearest-customers', 'VisitController', 'nearestCustomers');
+$router->post('/visits/customer/{id}/coordinates', 'VisitController', 'updateCustomerCoordinates');
+
+// API routes (no authentication required)
+$router->get('/api/users', 'ApiController', 'users');
+$router->post('/api/users', 'ApiController', 'users');
+$router->put('/api/users', 'ApiController', 'users');
+$router->delete('/api/users', 'ApiController', 'users');
+
+// API Mastersales routes (no authentication required)
+$router->get('/api/mastersales', 'ApiMastersalesController', 'index');
+$router->post('/api/mastersales', 'ApiMastersalesController', 'index');
+$router->put('/api/mastersales', 'ApiMastersalesController', 'index');
+$router->delete('/api/mastersales', 'ApiMastersalesController', 'index');
+
+// API Tabelpabrik routes (no authentication required)
+$router->get('/api/tabelpabrik', 'ApiTabelpabrikController', 'index');
+$router->post('/api/tabelpabrik', 'ApiTabelpabrikController', 'index');
+$router->put('/api/tabelpabrik', 'ApiTabelpabrikController', 'index');
+$router->delete('/api/tabelpabrik', 'ApiTabelpabrikController', 'index');
+
+// API Tabelgolongan routes (no authentication required)
+$router->get('/api/tabelgolongan', 'ApiTabelgolonganController', 'index');
+$router->post('/api/tabelgolongan', 'ApiTabelgolonganController', 'index');
+$router->put('/api/tabelgolongan', 'ApiTabelgolonganController', 'index');
+$router->delete('/api/tabelgolongan', 'ApiTabelgolonganController', 'index');
+
+// API Mastersupplier routes (no authentication required)
+$router->get('/api/mastersupplier', 'ApiMastersupplierController', 'index');
+$router->post('/api/mastersupplier', 'ApiMastersupplierController', 'index');
+$router->put('/api/mastersupplier', 'ApiMastersupplierController', 'index');
+$router->delete('/api/mastersupplier', 'ApiMastersupplierController', 'index');
+
+// API Masterbarang routes (no authentication required)
+$router->get('/api/masterbarang', 'ApiMasterbarangController', 'index');
+$router->post('/api/masterbarang', 'ApiMasterbarangController', 'index');
+$router->put('/api/masterbarang', 'ApiMasterbarangController', 'index');
+$router->delete('/api/masterbarang', 'ApiMasterbarangController', 'index');
+
+// API Mastercustomer routes (no authentication required)
+$router->get('/api/mastercustomer', 'ApiMastercustomerController', 'index');
+$router->post('/api/mastercustomer', 'ApiMastercustomerController', 'index');
+$router->put('/api/mastercustomer', 'ApiMastercustomerController', 'index');
+$router->delete('/api/mastercustomer', 'ApiMastercustomerController', 'index');
+
+// Dispatch
+$router->dispatch();
+
