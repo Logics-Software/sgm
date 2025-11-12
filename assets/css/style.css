@@ -27,7 +27,10 @@ img[alt="password"] {
 .btn img[alt="add"],
 .btn img[alt="update"],
 .btn img[alt="profile"],
-.btn img[alt="password"] {
+.btn img[alt="password"],
+.btn img[alt="location-dot"],
+.btn img[alt="money-check-dollar"],
+.btn img[alt="boxes-stacked"] {
   filter: brightness(0) saturate(100%) invert(1);
 }
 
@@ -1703,12 +1706,16 @@ div.alert.alert-danger a {
   }
 
   .navbar-nav .dropdown-item img[alt="profile"],
-  .navbar-nav .dropdown-item img[alt="password"],
   .navbar-nav .dropdown-item img[alt="update"],
   .navbar-nav .dropdown-item img[alt="save"],
   .navbar-nav .dropdown-item img[alt="logout"] {
     filter: brightness(0) saturate(100%) invert(96%) sepia(2%) saturate(518%)
       hue-rotate(169deg) brightness(105%) contrast(103%);
+  }
+
+  .navbar-nav .dropdown-item img[alt="password"],
+  .navbar-nav .dropdown-item img[alt="key"] {
+    filter: brightness(0) saturate(100%) invert(1);
   }
 
   .navbar-nav .dropdown-menu .profile-dropdown-name {

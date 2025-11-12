@@ -84,6 +84,20 @@ $router->get('/orders/edit/{noorder}', 'OrderController', 'edit');
 $router->post('/orders/edit/{noorder}', 'OrderController', 'edit');
 $router->get('/orders/delete/{noorder}', 'OrderController', 'delete');
 
+// Penjualan routes
+$router->get('/penjualan', 'PenjualanController', 'index');
+$router->get('/penjualan/view/{nopenjualan}', 'PenjualanController', 'show');
+
+// Penerimaan Piutang routes
+$router->get('/penerimaan', 'PenerimaanController', 'index');
+$router->get('/penerimaan/create', 'PenerimaanController', 'create');
+$router->post('/penerimaan/create', 'PenerimaanController', 'create');
+$router->get('/penerimaan/view/{nopenerimaan}', 'PenerimaanController', 'show');
+$router->get('/penerimaan/edit/{nopenerimaan}', 'PenerimaanController', 'edit');
+$router->post('/penerimaan/edit/{nopenerimaan}', 'PenerimaanController', 'edit');
+$router->get('/penerimaan/delete/{nopenerimaan}', 'PenerimaanController', 'delete');
+$router->get('/penerimaan/get-available-penjualan', 'PenerimaanController', 'getAvailablePenjualan');
+
 // Login Log routes (admin/manajemen only)
 $router->get('/login-logs', 'LoginLogController', 'index');
 
@@ -141,11 +155,30 @@ $router->post('/api/masterbarang', 'ApiMasterbarangController', 'index');
 $router->put('/api/masterbarang', 'ApiMasterbarangController', 'index');
 $router->delete('/api/masterbarang', 'ApiMasterbarangController', 'index');
 
+// API Penjualan routes
+$router->get('/api/penjualan', 'ApiPenjualanController', 'index');
+$router->post('/api/penjualan', 'ApiPenjualanController', 'index');
+$router->put('/api/penjualan', 'ApiPenjualanController', 'index');
+$router->patch('/api/penjualan', 'ApiPenjualanController', 'index');
+$router->delete('/api/penjualan', 'ApiPenjualanController', 'index');
+
+// API Penerimaan routes
+$router->get('/api/penerimaan', 'ApiPenerimaanController', 'index');
+$router->post('/api/penerimaan', 'ApiPenerimaanController', 'index');
+$router->put('/api/penerimaan', 'ApiPenerimaanController', 'index');
+$router->patch('/api/penerimaan', 'ApiPenerimaanController', 'index');
+$router->delete('/api/penerimaan', 'ApiPenerimaanController', 'index');
+
 // API Mastercustomer routes (no authentication required)
 $router->get('/api/mastercustomer', 'ApiMastercustomerController', 'index');
 $router->post('/api/mastercustomer', 'ApiMastercustomerController', 'index');
 $router->put('/api/mastercustomer', 'ApiMastercustomerController', 'index');
 $router->delete('/api/mastercustomer', 'ApiMastercustomerController', 'index');
+
+// Laporan routes
+$router->get('/laporan/daftar-barang', 'LaporanController', 'daftarBarang');
+$router->get('/laporan/daftar-stok', 'LaporanController', 'daftarStok');
+$router->get('/laporan/daftar-harga', 'LaporanController', 'daftarHarga');
 
 // Dispatch
 $router->dispatch();

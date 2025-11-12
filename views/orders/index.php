@@ -68,7 +68,6 @@ require __DIR__ . '/../layouts/header.php';
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="w-100 d-lg-none"></div>
                             <div class="col-12 col-lg-4 d-lg-flex justify-content-lg-end">
                                 <div class="row g-2 w-100">
                                     <div class="col-6 col-lg-6">

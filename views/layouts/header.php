@@ -112,6 +112,8 @@ if (!function_exists('icon')) {
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownTransaksi">
                             <li><a class="dropdown-item" href="/orders">Transaksi Order</a></li>
+                            <li><a class="dropdown-item" href="/penjualan">Transaksi Penjualan</a></li>
+                            <li><a class="dropdown-item" href="/penerimaan">Transaksi Inkaso</a></li>
                         </ul>
                     </li>
                     <?php if (Auth::isSales()): ?>
@@ -119,6 +121,20 @@ if (!function_exists('icon')) {
                         <a class="nav-link" href="/visits">Kunjungan</a>
                     </li>
                     <?php endif; ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLaporan" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Laporan
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownLaporan">
+                            <li><a class="dropdown-item" href="/laporan/daftar-barang">Laporan Daftar Barang</a></li>
+                            <li><a class="dropdown-item" href="/laporan/daftar-stok">Laporan Daftar Stok</a></li>
+                            <li><a class="dropdown-item" href="/laporan/daftar-harga">Laporan Daftar Harga Barang</a></li>
+                            <li><a class="dropdown-item" href="#">Laporan Order Penjualan</a></li>
+                            <li><a class="dropdown-item" href="#">Laporan Faktur Penjualan</a></li>
+                            <li><a class="dropdown-item" href="#">Laporan Inkaso</a></li>
+                            <li><a class="dropdown-item" href="#">Laporan Omset Penjualan</a></li>
+                        </ul>
+                    </li>
                     <?php endif; ?>
                 </ul>
                 <ul class="navbar-nav">

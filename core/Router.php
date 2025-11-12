@@ -23,6 +23,10 @@ class Router {
     public function put($path, $controller, $action) {
         $this->add('PUT', $path, $controller, $action);
     }
+
+    public function patch($path, $controller, $action) {
+        $this->add('PATCH', $path, $controller, $action);
+    }
     
     public function delete($path, $controller, $action) {
         $this->add('DELETE', $path, $controller, $action);

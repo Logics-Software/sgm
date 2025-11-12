@@ -35,6 +35,10 @@ Public Function CallAPI(method As String, url As String, Optional data As String
             http.Open "PUT", url, False
             http.setRequestHeader "Content-Type", "application/json"
             http.send data
+        Case "PATCH"
+            http.Open "PATCH", url, False
+            http.setRequestHeader "Content-Type", "application/json"
+            http.send data
         Case "DELETE"
             http.Open "DELETE", url, False
             http.send
