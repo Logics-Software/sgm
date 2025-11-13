@@ -123,5 +123,56 @@ class MastercustomerController extends Controller {
 
         $this->view('mastercustomer/map', $data);
     }
+
+    public function updateCoordinates($customerId) {
+        Auth::requireRole(['admin', 'manajemen', 'operator', 'sales']);
+
+        $mastercustomerModel = new Mastercustomer();
+        $customer = $mastercustomerModel->findById($customerId);
+        
+        if (!$customer) {
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Customer tidak ditemukan']);
+            return;
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) {
+            $input = $_POST;
+        }
+
+        $latitude = isset($input['latitude']) ? (float)$input['latitude'] : null;
+        $longitude = isset($input['longitude']) ? (float)$input['longitude'] : null;
+
+        if ($latitude === null || $longitude === null) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Latitude dan longitude harus diisi']);
+            return;
+        }
+
+        if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
+            http_response_code(422);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Koordinat tidak valid']);
+            return;
+        }
+
+        $mastercustomerModel->updateCoordinates($customerId, $latitude, $longitude);
+
+        // Update status dan penanda pengguna bila relevan
+        $updateData = [
+            'status' => 'updated'
+        ];
+        $currentUser = Auth::user();
+        if ($currentUser && ($currentUser['role'] ?? '') === 'sales' && !empty($currentUser['kodesales'])) {
+            $updateData['userid'] = $currentUser['kodesales'];
+        }
+        $mastercustomerModel->update($customerId, $updateData);
+
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'message' => 'Koordinat berhasil disimpan']);
+    }
 }
 

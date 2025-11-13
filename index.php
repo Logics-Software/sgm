@@ -59,6 +59,7 @@ $router->get('/mastercustomer', 'MastercustomerController', 'index');
 $router->get('/mastercustomer/map', 'MastercustomerController', 'map');
 $router->get('/mastercustomer/edit/{id}', 'MastercustomerController', 'edit');
 $router->post('/mastercustomer/edit/{id}', 'MastercustomerController', 'edit');
+$router->post('/mastercustomer/{id}/coordinates', 'MastercustomerController', 'updateCoordinates');
 
 // Tabel Pabrik routes
 $router->get('/tabelpabrik', 'TabelpabrikController', 'index');
